@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Ingredient } from '../types'
 import { recipeApi } from '../services/api'
+import ImageUpload from '../components/ImageUpload'
 
 export default function NewRecipePage() {
   const navigate = useNavigate()
@@ -155,15 +156,12 @@ export default function NewRecipePage() {
             </div>
 
             <div>
-              <label htmlFor="imageUrl" className="block text-sm font-medium mb-2">
-                Image URL
+              <label className="block text-sm font-medium mb-3">
+                Recipe Photo
               </label>
-              <input
-                type="url"
-                id="imageUrl"
-                value={formData.imageUrl}
-                onChange={(e) => handleInputChange('imageUrl', e.target.value)}
-                placeholder="https://example.com/image.jpg"
+              <ImageUpload 
+                onImageUploaded={(imageUrl) => handleInputChange('imageUrl', imageUrl)}
+                currentImageUrl={formData.imageUrl}
               />
             </div>
 

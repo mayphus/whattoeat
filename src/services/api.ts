@@ -85,3 +85,27 @@ export const analyticsApi = {
     return request<MealAnalytics>(`/analytics${query}`)
   },
 }
+
+export const imageApi = {
+  async upload(file: File): Promise<{ imageUrl: string }> {
+    const formData = new FormData()
+    formData.append("image", file)
+    
+    const response = await fetch(`${API_BASE}/upload`, {
+      method: "POST",
+      body: formData,
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`)
+    }
+
+    const data: ApiResponse<{ imageUrl: string }> = await response.json()
+    
+    if (!data.success) {
+      throw new Error(data.error || "Upload failed")
+    }
+
+    return data.data!
+  },
+}

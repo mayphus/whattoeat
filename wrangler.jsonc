@@ -19,6 +19,12 @@
 			"database_name": "whattoeat-db",
 			"database_id": "local"
 		}
+	],
+	"r2_buckets": [
+		{
+			"binding": "IMAGES",
+			"bucket_name": "whattoeat-images"
+		}
 	]
 	/**
 	 * Smart Placement

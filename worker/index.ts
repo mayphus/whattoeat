@@ -69,6 +69,72 @@ export default {
         return Response.json({ success: true, data: analytics }, { headers: corsHeaders })
       }
 
+      // Image upload endpoint
+      if (url.pathname === '/api/upload' && request.method === 'POST') {
+        const formData = await request.formData()
+        const file = formData.get('image') as File
+        
+        if (!file) {
+          return Response.json({ success: false, error: 'No image file provided' }, { status: 400, headers: corsHeaders })
+        }
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+          return Response.json({ success: false, error: 'Invalid file type' }, { status: 400, headers: corsHeaders })
+        }
+
+        // Validate file size (5MB max)
+        if (file.size > 5 * 1024 * 1024) {
+          return Response.json({ success: false, error: 'File too large' }, { status: 400, headers: corsHeaders })
+        }
+
+        try {
+          // Generate unique filename
+          const timestamp = Date.now()
+          const extension = file.name.split('.').pop() || 'jpg'
+          const fileName = `recipe-${timestamp}-${Math.random().toString(36).substring(7)}.${extension}`
+          
+          // Upload to R2
+          await env.IMAGES.put(fileName, file.stream(), {
+            httpMetadata: {
+              contentType: file.type,
+            },
+          })
+
+          const imageUrl = `/api/images/${fileName}`
+          return Response.json({ success: true, data: { imageUrl } }, { headers: corsHeaders })
+        } catch (error) {
+          console.error('Image upload error:', error)
+          return Response.json({ success: false, error: 'Upload failed' }, { status: 500, headers: corsHeaders })
+        }
+      }
+
+      // Serve images
+      if (url.pathname.startsWith('/api/images/') && request.method === 'GET') {
+        const fileName = url.pathname.split('/api/images/')[1]
+        if (!fileName) {
+          return new Response('Image not found', { status: 404, headers: corsHeaders })
+        }
+
+        try {
+          const object = await env.IMAGES.get(fileName)
+          if (!object) {
+            return new Response('Image not found', { status: 404, headers: corsHeaders })
+          }
+
+          const headers = {
+            ...corsHeaders,
+            'Content-Type': object.httpMetadata?.contentType || 'image/jpeg',
+            'Cache-Control': 'public, max-age=31536000', // 1 year cache
+          }
+
+          return new Response(object.body, { headers })
+        } catch (error) {
+          console.error('Image serve error:', error)
+          return new Response('Image not found', { status: 404, headers: corsHeaders })
+        }
+      }
+
       return new Response(null, { status: 404, headers: corsHeaders })
     } catch (error) {
       console.error('API Error:', error)
