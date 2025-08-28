@@ -7,13 +7,23 @@
 		"dev": "vite",
 		"build": "tsc -b && vite build",
 		"lint": "eslint .",
+		"test": "vitest",
+		"test:ui": "vitest --ui",
+		"test:run": "vitest run",
 		"preview": "npm run build && vite preview",
 		"deploy": "npm run build && wrangler deploy",
 		"cf-typegen": "wrangler types"
 	},
 	"dependencies": {
+		"@testing-library/jest-dom": "^6.8.0",
+		"@testing-library/react": "^16.3.0",
+		"@types/react-router-dom": "^5.3.3",
+		"date-fns": "^4.1.0",
+		"jsdom": "^26.1.0",
 		"react": "^19.1.1",
-		"react-dom": "^19.1.1"
+		"react-dom": "^19.1.1",
+		"react-router-dom": "^7.8.2",
+		"vitest": "^3.2.4"
 	},
 	"devDependencies": {
 		"@cloudflare/vite-plugin": "^1.12.0",
