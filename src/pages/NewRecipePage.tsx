@@ -244,7 +244,7 @@ export default function NewRecipePage() {
             <button
               type="button"
               onClick={addIngredient}
-              className="btn btn-ghost btn-small"
+              className="text-primary text-sm hover:underline"
             >
               + 新增材料
             </button>
@@ -283,7 +283,7 @@ export default function NewRecipePage() {
                   <button
                     type="button"
                     onClick={() => removeIngredient(index)}
-                    className="btn btn-ghost btn-small text-error"
+                    className="text-red-500 hover:text-red-700 text-lg"
                     disabled={formData.ingredients.length === 1}
                   >
                     ×
@@ -301,7 +301,7 @@ export default function NewRecipePage() {
             <button
               type="button"
               onClick={addInstruction}
-              className="btn btn-ghost btn-small"
+              className="text-primary text-sm hover:underline"
             >
               + 新增步驟
             </button>
@@ -324,7 +324,7 @@ export default function NewRecipePage() {
                 <button
                   type="button"
                   onClick={() => removeInstruction(index)}
-                  className="btn btn-ghost btn-small text-error"
+                  className="text-red-500 hover:text-red-700 text-lg"
                   disabled={formData.instructions.length === 1}
                 >
                   ×

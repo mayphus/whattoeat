@@ -146,13 +146,11 @@ select:focus {
 }
 
 .btn:not(:disabled):hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.15);
+  opacity: 0.9;
 }
 
 .btn:not(:disabled):active {
-  transform: translateY(0px);
-  transition: all 0.1s cubic-bezier(0.4, 0.0, 0.2, 1);
+  opacity: 0.8;
 }
 
 /* Primary Button - The star of the show */
@@ -271,8 +269,6 @@ select:focus {
 }
 
 .card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px -8px rgba(0, 0, 0, 0.12);
   border-color: var(--color-warm-300);
 }
 
@@ -481,7 +477,6 @@ select:focus {
 .nav-link:hover {
   color: var(--color-neutral-800);
   background-color: var(--color-warm-100);
-  transform: translateY(-1px);
 }
 
 .nav-link.active {
@@ -562,8 +557,6 @@ select:focus {
 .upload-area:hover {
   border-color: var(--color-primary-light);
   background: linear-gradient(145deg, var(--color-warm-50) 0%, var(--color-warm-100) 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 32px -8px rgba(234, 97, 0, 0.2);
 }
 
 .upload-area:hover::before {

@@ -89,9 +89,8 @@ function RecipeCard({ recipe }: RecipeCardProps) {
             <img 
               src={recipe.imageUrl} 
               alt={recipe.name}
-              className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105"
+              className="w-full h-48 object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </div>
         ) : (
           <div className="w-full h-32 bg-gradient-to-br from-orange-100 to-orange-200 rounded-xl mb-6 -mx-2 -mt-2 flex items-center justify-center">
@@ -100,7 +99,7 @@ function RecipeCard({ recipe }: RecipeCardProps) {
         )}
         
         <div className="space-y-3">
-          <h3 className="text-xl font-semibold group-hover:text-primary transition-colors duration-200">
+          <h3 className="text-xl font-semibold">
             {recipe.name}
           </h3>
         
