@@ -112,8 +112,7 @@ export default function NewRecipePage() {
   return (
     <div className="container-sm">
       <div className="mb-8">
-        <h1>Add New Recipe</h1>
-        <p className="text-gray-600">Share your culinary creation</p>
+        <h1>Add Recipe</h1>
       </div>
 
       {error && (

@@ -77,7 +77,6 @@ export default function NewMealPage() {
     <div className="container-sm">
       <div className="mb-8">
         <h1>Log Meal</h1>
-        <p className="text-gray-600">Record what you ate</p>
       </div>
 
       {error && (

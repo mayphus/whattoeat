@@ -50,26 +50,18 @@ export default function RecipesPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-12">
-        <div>
-          <h1 className="mb-2">Recipes</h1>
-          <p className="lead">Discover and create delicious meals</p>
-        </div>
+        <h1>Recipes</h1>
         <Link to="/recipes/new" className="btn btn-primary btn-large">
-          ✨ Create Recipe
+          Add Recipe
         </Link>
       </div>
 
       {recipes.length === 0 ? (
         <div className="text-center py-20">
-          <div className="mb-8">
-            <div className="text-6xl mb-6">🍳</div>
-            <h2 className="mb-4">Your culinary journey starts here</h2>
-            <p className="lead mb-8 max-w-md mx-auto">
-              Create your first recipe and start building your personal cookbook of delicious discoveries.
-            </p>
-          </div>
+          <div className="text-6xl mb-6">🍳</div>
+          <h2 className="mb-8">No recipes yet</h2>
           <Link to="/recipes/new" className="btn btn-primary btn-large">
-            ✨ Create Your First Recipe
+            Add Your First Recipe
           </Link>
         </div>
       ) : (
