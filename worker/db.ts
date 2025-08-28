@@ -1,7 +1,11 @@
-import { Recipe, Ingredient, Meal, MealAnalytics } from '../src/types'
+import type { Recipe, Ingredient, Meal, MealAnalytics } from '../src/types'
 
 export class Database {
-  constructor(private db: D1Database) {}
+  private db: D1Database
+  
+  constructor(db: D1Database) {
+    this.db = db
+  }
 
   // Recipe methods
   async createRecipe(recipe: Omit<Recipe, 'id' | 'createdAt' | 'updatedAt'>): Promise<Recipe> {
@@ -74,33 +78,33 @@ export class Database {
     const ingredientsResult = await ingredientsStmt.bind(row.id).all()
     
     const ingredients: Ingredient[] = ingredientsResult.results.map((ing: Record<string, unknown>) => ({
-      id: ing.id,
-      name: ing.name,
-      amount: ing.amount,
-      unit: ing.unit
+      id: ing.id as string,
+      name: ing.name as string,
+      amount: ing.amount as number,
+      unit: ing.unit as string
     }))
 
     return {
-      id: row.id,
-      name: row.name,
-      description: row.description,
-      imageUrl: row.image_url,
-      prepTime: row.prep_time,
-      cookTime: row.cook_time,
-      servings: row.servings,
-      difficulty: row.difficulty,
-      category: row.category,
+      id: row.id as string,
+      name: row.name as string,
+      description: row.description as string | undefined,
+      imageUrl: row.image_url as string | undefined,
+      prepTime: row.prep_time as number,
+      cookTime: row.cook_time as number,
+      servings: row.servings as number,
+      difficulty: row.difficulty as "easy" | "medium" | "hard",
+      category: row.category as string,
       ingredients,
-      instructions: JSON.parse(row.instructions),
+      instructions: JSON.parse((row.instructions as string) || '[]'),
       nutrition: {
-        calories: row.calories,
-        protein: row.protein,
-        carbs: row.carbs,
-        fat: row.fat,
-        fiber: row.fiber
+        calories: row.calories as number | undefined,
+        protein: row.protein as number | undefined,
+        carbs: row.carbs as number | undefined,
+        fat: row.fat as number | undefined,
+        fiber: row.fiber as number | undefined
       },
-      createdAt: row.created_at,
-      updatedAt: row.updated_at
+      createdAt: row.created_at as string,
+      updatedAt: row.updated_at as string
     }
   }
 
@@ -172,19 +176,19 @@ export class Database {
   private async mapRowToMeal(row: Record<string, unknown>): Promise<Meal> {
     let recipe: Recipe | undefined
     if (row.recipe_id) {
-      recipe = await this.getRecipeById(row.recipe_id) || undefined
+      recipe = await this.getRecipeById(row.recipe_id as string) || undefined
     }
 
     return {
-      id: row.id,
-      date: row.date,
-      mealType: row.meal_type,
-      recipeId: row.recipe_id,
+      id: row.id as string,
+      date: row.date as string,
+      mealType: row.meal_type as "breakfast" | "lunch" | "dinner" | "snack",
+      recipeId: row.recipe_id as string | undefined,
       recipe,
-      customFoodName: row.custom_food_name,
-      portion: row.portion,
-      notes: row.notes,
-      createdAt: row.created_at
+      customFoodName: row.custom_food_name as string | undefined,
+      portion: row.portion as number,
+      notes: row.notes as string | undefined,
+      createdAt: row.created_at as string
     }
   }
 

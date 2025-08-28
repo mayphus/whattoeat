@@ -49,25 +49,26 @@ export default function RecipesPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-12">
-        <h1>Recipes</h1>
-        <Link to="/recipes/new" className="btn btn-primary btn-large">
-          Add Recipe
-        </Link>
-      </div>
-
       {recipes.length === 0 ? (
-        <div className="text-center py-20">
-          <Link to="/recipes/new" className="btn btn-primary btn-large">
+        <div className="min-h-[60vh] flex items-center justify-center">
+          <Link to="/recipes/new" className="btn btn-primary btn-hero">
             Add Recipe
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 grid-md-2 grid-lg-3 gap-8">
-          {recipes.map((recipe) => (
-            <RecipeCard key={recipe.id} recipe={recipe} />
-          ))}
-        </div>
+        <>
+          <div className="flex items-center justify-between mb-12">
+            <h1>Recipes</h1>
+            <Link to="/recipes/new" className="btn btn-primary btn-large">
+              Add Recipe
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 grid-md-2 grid-lg-3 gap-8">
+            {recipes.map((recipe) => (
+              <RecipeCard key={recipe.id} recipe={recipe} />
+            ))}
+          </div>
+        </>
       )}
     </div>
   )

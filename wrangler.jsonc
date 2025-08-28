@@ -8,6 +8,7 @@
 	"main": "worker/index.ts",
 	"compatibility_date": "2025-08-26",
 	"assets": {
+		"directory": "./dist",
 		"not_found_handling": "single-page-application"
 	},
 	"observability": {
@@ -17,7 +18,7 @@
 		{
 			"binding": "DB",
 			"database_name": "whattoeat-db",
-			"database_id": "local"
+			"database_id": "5491a3f7-3491-42d5-b472-fef1b82e8ca8"
 		}
 	],
 	"r2_buckets": [

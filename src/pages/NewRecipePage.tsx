@@ -83,8 +83,8 @@ export default function NewRecipePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (!formData.name.trim() || !formData.instructions[0].trim()) {
-      setError('Name and at least one instruction are required')
+    if (!formData.name.trim()) {
+      setError('Recipe name is required')
       return
     }
 

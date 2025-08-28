@@ -39,21 +39,6 @@ export default function MealsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
-        <h1>Meals</h1>
-        <div className="flex items-center gap-4">
-          <input
-            type="date"
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
-            className="btn btn-secondary"
-          />
-          <Link to="/meals/new" className="btn btn-primary">
-            Log Meal
-          </Link>
-        </div>
-      </div>
-
       {loading && (
         <div className="text-center py-12">
           <p className="text-gray-600">Loading meals...</p>
@@ -71,28 +56,53 @@ export default function MealsPage() {
 
       {!loading && !error && (
         <>
-          <div className="mb-6">
-            <h2 className="text-lg font-medium">
-              {format(new Date(selectedDate), 'MMMM d, yyyy')}
-            </h2>
-          </div>
-
           {meals.length === 0 ? (
-            <div className="text-center py-12">
-              <Link to="/meals/new" className="btn btn-primary">
-                Log Meal
-              </Link>
-            </div>
-          ) : (
-            <div className="grid gap-8">
-              {['breakfast', 'lunch', 'dinner', 'snack'].map((mealType) => (
-                <MealTypeSection
-                  key={mealType}
-                  mealType={mealType}
-                  meals={mealsByType[mealType] || []}
+            <>
+              <div className="flex justify-end mb-8">
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  className="btn btn-secondary"
                 />
-              ))}
-            </div>
+              </div>
+              <div className="min-h-[50vh] flex items-center justify-center">
+                <Link to="/meals/new" className="btn btn-primary btn-hero">
+                  Log Meal
+                </Link>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="flex items-center justify-between mb-8">
+                <h1>Meals</h1>
+                <div className="flex items-center gap-4">
+                  <input
+                    type="date"
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    className="btn btn-secondary"
+                  />
+                  <Link to="/meals/new" className="btn btn-primary">
+                    Log Meal
+                  </Link>
+                </div>
+              </div>
+              <div className="mb-6">
+                <h2 className="text-lg font-medium">
+                  {format(new Date(selectedDate), 'MMMM d, yyyy')}
+                </h2>
+              </div>
+              <div className="grid gap-8">
+                {['breakfast', 'lunch', 'dinner', 'snack'].map((mealType) => (
+                  <MealTypeSection
+                    key={mealType}
+                    mealType={mealType}
+                    meals={mealsByType[mealType] || []}
+                  />
+                ))}
+              </div>
+            </>
           )}
         </>
       )}

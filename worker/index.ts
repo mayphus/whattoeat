@@ -25,7 +25,7 @@ export default {
 
       if (url.pathname === '/api/recipes' && request.method === 'POST') {
         const recipe = await request.json()
-        const createdRecipe = await db.createRecipe(recipe)
+        const createdRecipe = await db.createRecipe(recipe as any)
         return Response.json({ success: true, data: createdRecipe }, { headers: corsHeaders })
       }
 
@@ -48,7 +48,7 @@ export default {
 
       if (url.pathname === '/api/meals' && request.method === 'POST') {
         const meal = await request.json()
-        const createdMeal = await db.createMeal(meal)
+        const createdMeal = await db.createMeal(meal as any)
         return Response.json({ success: true, data: createdMeal }, { headers: corsHeaders })
       }
 
