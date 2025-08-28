@@ -42,12 +42,12 @@ export default function NewMealPage() {
     e.preventDefault()
     
     if (!useCustomFood && !formData.recipeId) {
-      setError('Please select a recipe or enter a custom food')
+      setError('請選擇食譜或輸入自定義食物')
       return
     }
 
     if (useCustomFood && !formData.customFoodName.trim()) {
-      setError('Please enter a food name')
+      setError('請輸入食物名稱')
       return
     }
 
@@ -67,7 +67,7 @@ export default function NewMealPage() {
       await mealApi.create(meal)
       navigate('/meals')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to log meal')
+      setError(err instanceof Error ? err.message : '記錄用餐失敗')
     } finally {
       setLoading(false)
     }
@@ -76,7 +76,7 @@ export default function NewMealPage() {
   return (
     <div className="container-sm">
       <div className="mb-8">
-        <h1>Log Meal</h1>
+        <h1>記錄用餐</h1>
       </div>
 
       {error && (
@@ -90,7 +90,7 @@ export default function NewMealPage() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label htmlFor="date" className="block text-sm font-medium mb-2">
-                Date
+                日期
               </label>
               <input
                 type="date"
@@ -103,7 +103,7 @@ export default function NewMealPage() {
 
             <div>
               <label htmlFor="mealType" className="block text-sm font-medium mb-2">
-                Meal Type
+                用餐類型
               </label>
               <select
                 id="mealType"
@@ -111,10 +111,10 @@ export default function NewMealPage() {
                 onChange={(e) => handleInputChange('mealType', e.target.value)}
                 required
               >
-                <option value="breakfast">Breakfast</option>
-                <option value="lunch">Lunch</option>
-                <option value="dinner">Dinner</option>
-                <option value="snack">Snack</option>
+                <option value="breakfast">早餐</option>
+                <option value="lunch">午餐</option>
+                <option value="dinner">晚餐</option>
+                <option value="snack">點心</option>
               </select>
             </div>
           </div>
@@ -131,7 +131,7 @@ export default function NewMealPage() {
                   onChange={() => setUseCustomFood(false)}
                   className="mr-2"
                 />
-                From Recipe
+                來自食譜
               </label>
               <label className="flex items-center">
                 <input
@@ -141,7 +141,7 @@ export default function NewMealPage() {
                   onChange={() => setUseCustomFood(true)}
                   className="mr-2"
                 />
-                Custom Food
+                自定義食物
               </label>
             </div>
           </div>
@@ -149,21 +149,21 @@ export default function NewMealPage() {
           {useCustomFood ? (
             <div>
               <label htmlFor="customFoodName" className="block text-sm font-medium mb-2">
-                Food Name
+                食物名稱
               </label>
               <input
                 type="text"
                 id="customFoodName"
                 value={formData.customFoodName}
                 onChange={(e) => handleInputChange('customFoodName', e.target.value)}
-                placeholder="e.g., Apple, Sandwich, etc."
+                placeholder="例如：蘋果、三明治等"
                 required={useCustomFood}
               />
             </div>
           ) : (
             <div>
               <label htmlFor="recipeId" className="block text-sm font-medium mb-2">
-                Recipe
+                食譜
               </label>
               <select
                 id="recipeId"
@@ -171,7 +171,7 @@ export default function NewMealPage() {
                 onChange={(e) => handleInputChange('recipeId', e.target.value)}
                 required={!useCustomFood}
               >
-                <option value="">Select a recipe...</option>
+                <option value="">選擇食譜...</option>
                 {recipes.map((recipe) => (
                   <option key={recipe.id} value={recipe.id}>
                     {recipe.name}
@@ -181,7 +181,7 @@ export default function NewMealPage() {
               
               {recipes.length === 0 && (
                 <p className="text-sm text-gray-500 mt-2">
-                  No recipes available. <a href="/recipes/new" className="text-primary">Create one first</a>.
+                  沒有可用的食譜。 <a href="/recipes/new" className="text-primary">先創建一個</a>。
                 </p>
               )}
             </div>
@@ -191,7 +191,7 @@ export default function NewMealPage() {
         {!useCustomFood && (
           <div className="card">
             <label htmlFor="portion" className="block text-sm font-medium mb-2">
-              Portion Size
+              份量大小
             </label>
             <input
               type="number"
@@ -202,21 +202,21 @@ export default function NewMealPage() {
               onChange={(e) => handleInputChange('portion', parseFloat(e.target.value) || 1)}
             />
             <p className="text-sm text-gray-500 mt-1">
-              1.0 = full recipe serving, 0.5 = half serving, etc.
+              1.0 = 整份食譜，0.5 = 半份，以此類推。
             </p>
           </div>
         )}
 
         <div className="card">
           <label htmlFor="notes" className="block text-sm font-medium mb-2">
-            Notes (Optional)
+            備註 (可選)
           </label>
           <textarea
             id="notes"
             rows={3}
             value={formData.notes}
             onChange={(e) => handleInputChange('notes', e.target.value)}
-            placeholder="Any additional notes about this meal..."
+            placeholder="關於這餐的任何額外備註..."
           />
         </div>
 
@@ -226,14 +226,14 @@ export default function NewMealPage() {
             disabled={loading}
             className="btn btn-primary"
           >
-            {loading ? 'Logging...' : 'Log Meal'}
+            {loading ? '記錄中...' : '記錄用餐'}
           </button>
           <button
             type="button"
             onClick={() => navigate('/meals')}
             className="btn btn-secondary"
           >
-            Cancel
+            取消
           </button>
         </div>
       </form>

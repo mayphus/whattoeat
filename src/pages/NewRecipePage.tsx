@@ -84,7 +84,7 @@ export default function NewRecipePage() {
     e.preventDefault()
     
     if (!formData.name.trim()) {
-      setError('Recipe name is required')
+      setError('請輸入食譜名稱')
       return
     }
 
@@ -112,7 +112,7 @@ export default function NewRecipePage() {
   return (
     <div className="container-sm">
       <div className="mb-8">
-        <h1>Add Recipe</h1>
+        <h1>新增食譜</h1>
       </div>
 
       {error && (
@@ -124,39 +124,39 @@ export default function NewRecipePage() {
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Basic Info */}
         <div className="card">
-          <h2 className="text-lg font-medium mb-4">Basic Information</h2>
+          <h2 className="text-lg font-medium mb-4">基本資訊</h2>
           
           <div className="grid gap-4">
             <div>
               <label htmlFor="name" className="block text-sm font-medium mb-2">
-                Recipe Name *
+                食譜名稱 *
               </label>
               <input
                 type="text"
                 id="name"
                 value={formData.name}
                 onChange={(e) => handleInputChange('name', e.target.value)}
-                placeholder="My Amazing Recipe"
+                placeholder="我的美味食譜"
                 required
               />
             </div>
 
             <div>
               <label htmlFor="description" className="block text-sm font-medium mb-2">
-                Description
+                描述
               </label>
               <textarea
                 id="description"
                 rows={3}
                 value={formData.description}
                 onChange={(e) => handleInputChange('description', e.target.value)}
-                placeholder="A brief description of your recipe..."
+                placeholder="簡單描述你的食譜..."
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium mb-3">
-                Recipe Photo
+                食譜圖片
               </label>
               <ImageUpload 
                 onImageUploaded={(imageUrl) => handleInputChange('imageUrl', imageUrl)}
@@ -167,7 +167,7 @@ export default function NewRecipePage() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label htmlFor="prepTime" className="block text-sm font-medium mb-2">
-                  Prep Time (minutes)
+                  準備時間 (分鐘)
                 </label>
                 <input
                   type="number"
@@ -180,7 +180,7 @@ export default function NewRecipePage() {
 
               <div>
                 <label htmlFor="cookTime" className="block text-sm font-medium mb-2">
-                  Cook Time (minutes)
+                  烹飪時間 (分鐘)
                 </label>
                 <input
                   type="number"
@@ -195,7 +195,7 @@ export default function NewRecipePage() {
             <div className="grid grid-cols-3 gap-4">
               <div>
                 <label htmlFor="servings" className="block text-sm font-medium mb-2">
-                  Servings
+                  份量
                 </label>
                 <input
                   type="number"
@@ -208,22 +208,22 @@ export default function NewRecipePage() {
 
               <div>
                 <label htmlFor="difficulty" className="block text-sm font-medium mb-2">
-                  Difficulty
+                  難度
                 </label>
                 <select
                   id="difficulty"
                   value={formData.difficulty}
                   onChange={(e) => handleInputChange('difficulty', e.target.value)}
                 >
-                  <option value="easy">Easy</option>
-                  <option value="medium">Medium</option>
-                  <option value="hard">Hard</option>
+                  <option value="easy">簡單</option>
+                  <option value="medium">中等</option>
+                  <option value="hard">困難</option>
                 </select>
               </div>
 
               <div>
                 <label htmlFor="category" className="block text-sm font-medium mb-2">
-                  Category
+                  類別
                 </label>
                 <input
                   type="text"
@@ -240,13 +240,13 @@ export default function NewRecipePage() {
         {/* Ingredients */}
         <div className="card">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-medium">Ingredients</h2>
+            <h2 className="text-lg font-medium">材料</h2>
             <button
               type="button"
               onClick={addIngredient}
               className="btn btn-ghost btn-small"
             >
-              + Add Ingredient
+              + 新增材料
             </button>
           </div>
 
@@ -268,7 +268,7 @@ export default function NewRecipePage() {
                     type="text"
                     value={ingredient.unit}
                     onChange={(e) => handleIngredientChange(index, 'unit', e.target.value)}
-                    placeholder="cup"
+                    placeholder="杯"
                   />
                 </div>
                 <div className="col-span-8">
@@ -276,7 +276,7 @@ export default function NewRecipePage() {
                     type="text"
                     value={ingredient.name}
                     onChange={(e) => handleIngredientChange(index, 'name', e.target.value)}
-                    placeholder="Ingredient name"
+                    placeholder="材料名稱"
                   />
                 </div>
                 <div className="col-span-1">
@@ -297,13 +297,13 @@ export default function NewRecipePage() {
         {/* Instructions */}
         <div className="card">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-medium">Instructions</h2>
+            <h2 className="text-lg font-medium">制作步驟</h2>
             <button
               type="button"
               onClick={addInstruction}
               className="btn btn-ghost btn-small"
             >
-              + Add Step
+              + 新增步驟
             </button>
           </div>
 
@@ -318,7 +318,7 @@ export default function NewRecipePage() {
                     rows={2}
                     value={instruction}
                     onChange={(e) => handleInstructionChange(index, e.target.value)}
-                    placeholder="Describe this step..."
+                    placeholder="描述這個步驟..."
                   />
                 </div>
                 <button
@@ -336,10 +336,10 @@ export default function NewRecipePage() {
 
         {/* Nutrition (Optional) */}
         <div className="card">
-          <h2 className="text-lg font-medium mb-4">Nutrition (Optional)</h2>
+          <h2 className="text-lg font-medium mb-4">營養成分 (可選)</h2>
           <div className="grid grid-cols-5 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-2">Calories</label>
+              <label className="block text-sm font-medium mb-2">熱量</label>
               <input
                 type="number"
                 min="0"
@@ -348,7 +348,7 @@ export default function NewRecipePage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">Protein (g)</label>
+              <label className="block text-sm font-medium mb-2">蛋白質 (g)</label>
               <input
                 type="number"
                 min="0"
@@ -358,7 +358,7 @@ export default function NewRecipePage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">Carbs (g)</label>
+              <label className="block text-sm font-medium mb-2">碳水化合物 (g)</label>
               <input
                 type="number"
                 min="0"
@@ -368,7 +368,7 @@ export default function NewRecipePage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">Fat (g)</label>
+              <label className="block text-sm font-medium mb-2">脂肪 (g)</label>
               <input
                 type="number"
                 min="0"
@@ -378,7 +378,7 @@ export default function NewRecipePage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">Fiber (g)</label>
+              <label className="block text-sm font-medium mb-2">纖維 (g)</label>
               <input
                 type="number"
                 min="0"
@@ -397,14 +397,14 @@ export default function NewRecipePage() {
             disabled={loading}
             className="btn btn-primary"
           >
-            {loading ? 'Creating...' : 'Create Recipe'}
+            {loading ? '創建中...' : '創建食譜'}
           </button>
           <button
             type="button"
             onClick={() => navigate('/')}
             className="btn btn-secondary"
           >
-            Cancel
+            取消
           </button>
         </div>
       </form>

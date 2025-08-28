@@ -19,7 +19,7 @@ export default function MealsPage() {
       setMeals(data)
       setError(null)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load meals')
+      setError(err instanceof Error ? err.message : '載入用餐記錄失敗')
     } finally {
       setLoading(false)
     }
@@ -41,7 +41,7 @@ export default function MealsPage() {
     <div>
       {loading && (
         <div className="text-center py-12">
-          <p className="text-gray-600">Loading meals...</p>
+          <p className="text-gray-600">載入用餐記錄中...</p>
         </div>
       )}
 
@@ -49,7 +49,7 @@ export default function MealsPage() {
         <div className="text-center py-12">
           <p className="text-error mb-4">{error}</p>
           <button onClick={loadMeals} className="btn btn-secondary">
-            Try Again
+            重試
           </button>
         </div>
       )}
@@ -68,14 +68,14 @@ export default function MealsPage() {
               </div>
               <div className="min-h-[50vh] flex items-center justify-center">
                 <Link to="/meals/new" className="btn btn-primary btn-hero">
-                  Log Meal
+                  記錄用餐
                 </Link>
               </div>
             </>
           ) : (
             <>
               <div className="flex items-center justify-between mb-8">
-                <h1>Meals</h1>
+                <h1>用餐記錄</h1>
                 <div className="flex items-center gap-4">
                   <input
                     type="date"
@@ -84,7 +84,7 @@ export default function MealsPage() {
                     className="btn btn-secondary"
                   />
                   <Link to="/meals/new" className="btn btn-primary">
-                    Log Meal
+                    記錄用餐
                   </Link>
                 </div>
               </div>
@@ -118,12 +118,14 @@ interface MealTypeSectionProps {
 function MealTypeSection({ mealType, meals }: MealTypeSectionProps) {
   return (
     <div>
-      <h3 className="text-lg font-medium capitalize mb-4">{mealType}</h3>
+      <h3 className="text-lg font-medium capitalize mb-4">
+        {mealType === 'breakfast' ? '早餐' : mealType === 'lunch' ? '午餐' : mealType === 'dinner' ? '晚餐' : '點心'}
+      </h3>
       
       {meals.length === 0 ? (
         <div className="card">
           <p className="text-gray-500 text-center py-4">
-            No {mealType} logged
+            尚無{mealType === 'breakfast' ? '早餐' : mealType === 'lunch' ? '午餐' : mealType === 'dinner' ? '晚餐' : '點心'}記錄
           </p>
         </div>
       ) : (

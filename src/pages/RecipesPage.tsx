@@ -19,7 +19,7 @@ export default function RecipesPage() {
       setRecipes(data)
       setError(null)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load recipes')
+      setError(err instanceof Error ? err.message : '載入食譜失敗')
     } finally {
       setLoading(false)
     }
@@ -28,7 +28,7 @@ export default function RecipesPage() {
   if (loading) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-600">Loading recipes...</p>
+        <p className="text-gray-600">載入食譜中...</p>
       </div>
     )
   }
@@ -41,7 +41,7 @@ export default function RecipesPage() {
           onClick={loadRecipes}
           className="btn btn-secondary"
         >
-          Try Again
+          重試
         </button>
       </div>
     )
@@ -52,15 +52,15 @@ export default function RecipesPage() {
       {recipes.length === 0 ? (
         <div className="min-h-[60vh] flex items-center justify-center">
           <Link to="/recipes/new" className="btn btn-primary btn-hero">
-            Add Recipe
+            新增食譜
           </Link>
         </div>
       ) : (
         <>
           <div className="flex items-center justify-between mb-12">
-            <h1>Recipes</h1>
+            <h1>食譜</h1>
             <Link to="/recipes/new" className="btn btn-primary btn-large">
-              Add Recipe
+              新增食譜
             </Link>
           </div>
           <div className="grid grid-cols-1 grid-md-2 grid-lg-3 gap-8">
@@ -112,7 +112,7 @@ function RecipeCard({ recipe }: RecipeCardProps) {
         
           <div className="flex items-center gap-4 text-sm text-neutral-500">
             <span className="flex items-center gap-1">
-              ⏱️ {totalTime} min
+              ⏱️ {totalTime} 分鐘
             </span>
             <span className="flex items-center gap-1">
               👥 {recipe.servings}
@@ -124,7 +124,7 @@ function RecipeCard({ recipe }: RecipeCardProps) {
                 ? 'bg-yellow-100 text-yellow-700'
                 : 'bg-red-100 text-red-700'
             }`}>
-              {recipe.difficulty}
+              {recipe.difficulty === 'easy' ? '簡單' : recipe.difficulty === 'medium' ? '中等' : '困難'}
             </span>
           </div>
         

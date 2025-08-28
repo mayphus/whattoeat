@@ -7,7 +7,7 @@ export default function Layout() {
         <div className="container">
           <div className="flex items-center justify-between">
             <NavLink to="/" className="nav-brand" end>
-              What to Eat
+              吃啥?
             </NavLink>
             
             <div className="nav-links">
@@ -18,7 +18,7 @@ export default function Layout() {
                 }
                 end
               >
-                Recipes
+                食譜
               </NavLink>
               <NavLink 
                 to="/meals" 
@@ -26,7 +26,7 @@ export default function Layout() {
                   `nav-link ${isActive ? 'active' : ''}`
                 }
               >
-                Meals
+                用餐
               </NavLink>
               <NavLink 
                 to="/analytics" 
@@ -34,7 +34,7 @@ export default function Layout() {
                   `nav-link ${isActive ? 'active' : ''}`
                 }
               >
-                Analytics
+                統計
               </NavLink>
             </div>
           </div>

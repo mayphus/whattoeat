@@ -698,3 +698,204 @@ select:focus {
 .bg-red-50 { background-color: #fef2f2; }
 .border-red-200 { border-color: #fecaca; }
 
+/* Mobile optimizations for iPhone 12 mini and small screens */
+@media (max-width: 480px) {
+  /* Improve touch targets */
+  .btn {
+    min-height: 48px;
+    font-size: var(--font-size-lg);
+    padding: var(--space-4) var(--space-6);
+  }
+  
+  .btn-hero {
+    min-height: 60px;
+    padding: var(--space-6) var(--space-10);
+    font-size: var(--font-size-xl);
+  }
+  
+  /* Improve typography scaling */
+  h1 { 
+    font-size: var(--font-size-3xl);
+    line-height: 1.1;
+    margin-bottom: var(--space-6);
+  }
+  
+  h2 { 
+    font-size: var(--font-size-2xl);
+    line-height: 1.2;
+  }
+  
+  h3 { 
+    font-size: var(--font-size-lg);
+    line-height: 1.3;
+  }
+  
+  /* Improve form inputs */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="date"],
+  input[type="time"],
+  textarea,
+  select {
+    font-size: 16px; /* Prevents zoom on iOS */
+    padding: var(--space-4);
+    min-height: 48px;
+  }
+  
+  /* Better card spacing */
+  .card {
+    margin: var(--space-4) var(--space-3);
+    padding: var(--space-6);
+  }
+  
+  /* Improve grid layouts */
+  .grid {
+    gap: var(--space-4);
+  }
+  
+  .grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+  
+  .grid-cols-3 {
+    grid-template-columns: 1fr;
+  }
+  
+  .grid-cols-5 {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  /* Better navigation spacing */
+  .flex {
+    gap: var(--space-3);
+  }
+  
+  /* Mobile navigation improvements */
+  .nav {
+    padding: var(--space-3) 0;
+  }
+  
+  .nav-brand {
+    font-size: var(--font-size-xl);
+  }
+  
+  .nav-links {
+    gap: var(--space-1);
+  }
+  
+  .nav-link {
+    font-size: var(--font-size-sm);
+    padding: var(--space-2) var(--space-3);
+  }
+  
+  .flex.items-center.justify-between {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-4);
+  }
+  
+  .flex.items-center.justify-between > * {
+    flex: none;
+  }
+  
+  /* Recipe cards optimization */
+  .grid-lg-3 {
+    grid-template-columns: 1fr;
+  }
+  
+  .grid-md-2 {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Image upload improvements */
+  .upload-area {
+    padding: var(--space-8) var(--space-4);
+    min-height: 200px;
+  }
+  
+  .upload-icon {
+    font-size: 3rem;
+  }
+  
+  /* Better ingredient/instruction forms */
+  .grid-cols-12 {
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+  }
+  
+  .col-span-1,
+  .col-span-2,
+  .col-span-8 {
+    grid-column: 1 / -1;
+  }
+  
+  /* Improve meal type sections */
+  .text-center.py-12 {
+    padding: var(--space-8) var(--space-4);
+  }
+  
+  .text-center.py-20 {
+    padding: var(--space-12) var(--space-4);
+  }
+  
+  /* Better container spacing */
+  .container-sm {
+    padding: 0 var(--space-4);
+  }
+  
+  .container {
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+  
+  /* Adjust main content padding for mobile */
+  main.container {
+    padding-top: var(--space-6) !important;
+    padding-bottom: var(--space-8) !important;
+  }
+  
+  /* Improve empty state layouts */
+  .min-h-\[60vh\] {
+    min-height: 50vh;
+  }
+  
+  .min-h-\[50vh\] {
+    min-height: 40vh;
+  }
+}
+
+/* iPhone 12 mini specific optimizations */
+@media (max-width: 375px) {
+  /* Even more compact spacing */
+  .card {
+    margin: var(--space-3) var(--space-2);
+    padding: var(--space-5);
+  }
+  
+  .btn {
+    font-size: var(--font-size-base);
+  }
+  
+  .btn-hero {
+    min-height: 56px;
+    font-size: var(--font-size-lg);
+    padding: var(--space-5) var(--space-8);
+  }
+  
+  h1 { 
+    font-size: var(--font-size-2xl);
+  }
+  
+  .container-sm {
+    padding: 0 var(--space-3);
+  }
+  
+  /* Stack nutrition inputs vertically */
+  .grid-cols-5 {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+}
+
