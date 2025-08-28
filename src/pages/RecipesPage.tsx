@@ -58,10 +58,8 @@ export default function RecipesPage() {
 
       {recipes.length === 0 ? (
         <div className="text-center py-20">
-          <div className="text-6xl mb-6">🍳</div>
-          <h2 className="mb-8">No recipes yet</h2>
           <Link to="/recipes/new" className="btn btn-primary btn-large">
-            Add Your First Recipe
+            Add Recipe
           </Link>
         </div>
       ) : (

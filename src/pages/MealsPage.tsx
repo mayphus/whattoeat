@@ -79,7 +79,6 @@ export default function MealsPage() {
 
           {meals.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-gray-600 mb-4">No meals yet</p>
               <Link to="/meals/new" className="btn btn-primary">
                 Log Meal
               </Link>
