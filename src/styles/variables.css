@@ -1,44 +1,63 @@
 /* Dieter Rams-inspired design system variables */
 :root {
-  /* Colors - Neutral and functional palette */
+  /* Colors - Warm, appetizing palette inspired by food */
   --color-white: #ffffff;
-  --color-gray-50: #fafafa;
-  --color-gray-100: #f4f4f5;
-  --color-gray-200: #e4e4e7;
-  --color-gray-300: #d4d4d8;
-  --color-gray-400: #a1a1aa;
-  --color-gray-500: #71717a;
-  --color-gray-600: #52525b;
-  --color-gray-700: #3f3f46;
-  --color-gray-800: #27272a;
-  --color-gray-900: #18181b;
+  --color-cream: #fefdf8;
+  --color-warm-50: #fdf8f3;
+  --color-warm-100: #faf0e6;
+  --color-warm-200: #f5e6d3;
+  --color-warm-300: #e8d5c4;
+  --color-neutral-400: #9ca3af;
+  --color-neutral-500: #6b7280;
+  --color-neutral-600: #4b5563;
+  --color-neutral-700: #374151;
+  --color-neutral-800: #1f2937;
+  --color-neutral-900: #111827;
   --color-black: #000000;
 
-  /* Accent colors - minimal use */
-  --color-primary: #2563eb;
-  --color-primary-light: #3b82f6;
+  /* Primary colors - warm, inviting food-inspired */
+  --color-primary: #ea6100; /* Rich orange like a perfect carrot */
+  --color-primary-light: #fb7c1f;
+  --color-primary-dark: #c1440e;
+  --color-primary-gradient: linear-gradient(135deg, #ea6100 0%, #fb7c1f 100%);
+  
+  /* Secondary colors */
+  --color-secondary: #16a34a; /* Fresh herb green */
+  --color-secondary-light: #22c55e;
+  --color-accent: #f59e0b; /* Golden yellow like corn */
+  
+  /* Status colors */
   --color-success: #059669;
   --color-warning: #d97706;
   --color-error: #dc2626;
 
-  /* Typography */
-  --font-size-xs: 0.75rem;
-  --font-size-sm: 0.875rem;
-  --font-size-base: 1rem;
-  --font-size-lg: 1.125rem;
-  --font-size-xl: 1.25rem;
-  --font-size-2xl: 1.5rem;
-  --font-size-3xl: 1.875rem;
-  --font-size-4xl: 2.25rem;
+  /* Typography - Refined scale with personality */
+  --font-size-xs: 0.75rem;    /* 12px */
+  --font-size-sm: 0.875rem;   /* 14px */
+  --font-size-base: 1rem;     /* 16px */
+  --font-size-lg: 1.125rem;   /* 18px */
+  --font-size-xl: 1.25rem;    /* 20px */
+  --font-size-2xl: 1.5rem;    /* 24px */
+  --font-size-3xl: 2rem;      /* 32px */
+  --font-size-4xl: 2.5rem;    /* 40px */
+  --font-size-5xl: 3rem;      /* 48px */
 
+  --font-weight-light: 300;
   --font-weight-normal: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
+  --font-weight-black: 900;
 
-  --line-height-tight: 1.25;
+  --line-height-tight: 1.2;
+  --line-height-snug: 1.375;
   --line-height-normal: 1.5;
   --line-height-relaxed: 1.625;
+
+  /* Font families */
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  --font-mono: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, monospace;
 
   /* Spacing - consistent 8px grid system */
   --space-1: 0.25rem;  /* 4px */

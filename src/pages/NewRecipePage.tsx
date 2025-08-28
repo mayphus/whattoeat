@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Ingredient } from '../types'
+import type { Ingredient } from '../types'
 import { recipeApi } from '../services/api'
 
 export default function NewRecipePage() {

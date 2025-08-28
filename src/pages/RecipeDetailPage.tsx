@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { Recipe } from '../types'
+import type { Recipe } from '../types'
 import { recipeApi } from '../services/api'
 
 export default function RecipeDetailPage() {

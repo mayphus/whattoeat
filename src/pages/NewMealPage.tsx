@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { format } from 'date-fns'
-import { Recipe } from '../types'
+import type { Recipe } from '../types'
 import { recipeApi, mealApi } from '../services/api'
 
 export default function NewMealPage() {

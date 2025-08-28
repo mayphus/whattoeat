@@ -1,11 +1,13 @@
-import { Recipe, Meal, MealAnalytics, ApiResponse } from '../types'
+import type { Recipe, Meal, MealAnalytics, ApiResponse } from '../types'
 
 const API_BASE = '/api'
 
 class ApiError extends Error {
-  constructor(public status: number, message: string) {
+  public status: number
+  constructor(status: number, message: string) {
     super(message)
     this.name = 'ApiError'
+    this.status = status
   }
 }
 

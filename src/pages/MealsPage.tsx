@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { format, startOfDay, endOfDay } from 'date-fns'
-import { Meal } from '../types'
+import type { Meal } from '../types'
 import { mealApi } from '../services/api'
 
 export default function MealsPage() {
@@ -9,10 +9,6 @@ export default function MealsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'))
-
-  useEffect(() => {
-    loadMeals()
-  }, [selectedDate, loadMeals])
 
   const loadMeals = useCallback(async () => {
     try {
@@ -28,6 +24,10 @@ export default function MealsPage() {
       setLoading(false)
     }
   }, [selectedDate])
+
+  useEffect(() => {
+    loadMeals()
+  }, [loadMeals])
 
   const mealsByType = meals.reduce((acc, meal) => {
     if (!acc[meal.mealType]) {

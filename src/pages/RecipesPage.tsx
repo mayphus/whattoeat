@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Recipe } from '../types'
+import type { Recipe } from '../types'
 import { recipeApi } from '../services/api'
 
 export default function RecipesPage() {
@@ -49,22 +49,31 @@ export default function RecipesPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
-        <h1>Recipes</h1>
-        <Link to="/recipes/new" className="btn btn-primary">
-          Add Recipe
+      <div className="flex items-center justify-between mb-12">
+        <div>
+          <h1 className="mb-2">Recipes</h1>
+          <p className="lead">Discover and create delicious meals</p>
+        </div>
+        <Link to="/recipes/new" className="btn btn-primary btn-large">
+          ✨ Create Recipe
         </Link>
       </div>
 
       {recipes.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-gray-600 mb-4">No recipes yet</p>
-          <Link to="/recipes/new" className="btn btn-primary">
-            Create Your First Recipe
+        <div className="text-center py-20">
+          <div className="mb-8">
+            <div className="text-6xl mb-6">🍳</div>
+            <h2 className="mb-4">Your culinary journey starts here</h2>
+            <p className="lead mb-8 max-w-md mx-auto">
+              Create your first recipe and start building your personal cookbook of delicious discoveries.
+            </p>
+          </div>
+          <Link to="/recipes/new" className="btn btn-primary btn-large">
+            ✨ Create Your First Recipe
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 grid-md-2 grid-lg-3 gap-6">
+        <div className="grid grid-cols-1 grid-md-2 grid-lg-3 gap-8">
           {recipes.map((recipe) => (
             <RecipeCard key={recipe.id} recipe={recipe} />
           ))}
@@ -82,34 +91,57 @@ function RecipeCard({ recipe }: RecipeCardProps) {
   const totalTime = recipe.prepTime + recipe.cookTime
 
   return (
-    <Link to={`/recipes/${recipe.id}`} className="block">
-      <div className="card hover:shadow-md transition-shadow">
-        {recipe.imageUrl && (
-          <img 
-            src={recipe.imageUrl} 
-            alt={recipe.name}
-            className="w-full h-48 object-cover rounded-lg mb-4"
-          />
+    <Link to={`/recipes/${recipe.id}`} className="block group">
+      <div className="card card-interactive">
+        {recipe.imageUrl ? (
+          <div className="relative overflow-hidden rounded-xl mb-6 -mx-2 -mt-2">
+            <img 
+              src={recipe.imageUrl} 
+              alt={recipe.name}
+              className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          </div>
+        ) : (
+          <div className="w-full h-32 bg-gradient-to-br from-orange-100 to-orange-200 rounded-xl mb-6 -mx-2 -mt-2 flex items-center justify-center">
+            <span className="text-4xl opacity-60">🍽️</span>
+          </div>
         )}
         
-        <h3 className="text-lg font-medium mb-2">{recipe.name}</h3>
+        <div className="space-y-3">
+          <h3 className="text-xl font-semibold group-hover:text-primary transition-colors duration-200">
+            {recipe.name}
+          </h3>
         
-        {recipe.description && (
-          <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-            {recipe.description}
-          </p>
-        )}
+          {recipe.description && (
+            <p className="text-neutral-600 text-sm leading-relaxed line-clamp-2">
+              {recipe.description}
+            </p>
+          )}
         
-        <div className="flex items-center gap-4 text-sm text-gray-500">
-          <span>{totalTime} min</span>
-          <span>{recipe.servings} servings</span>
-          <span className="capitalize">{recipe.difficulty}</span>
-        </div>
+          <div className="flex items-center gap-4 text-sm text-neutral-500">
+            <span className="flex items-center gap-1">
+              ⏱️ {totalTime} min
+            </span>
+            <span className="flex items-center gap-1">
+              👥 {recipe.servings}
+            </span>
+            <span className={`capitalize px-2 py-1 rounded-full text-xs font-medium ${
+              recipe.difficulty === 'easy' 
+                ? 'bg-green-100 text-green-700' 
+                : recipe.difficulty === 'medium'
+                ? 'bg-yellow-100 text-yellow-700'
+                : 'bg-red-100 text-red-700'
+            }`}>
+              {recipe.difficulty}
+            </span>
+          </div>
         
-        <div className="mt-3">
-          <span className="inline-block bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full">
-            {recipe.category}
-          </span>
+          <div>
+            <span className="inline-block bg-warm-100 text-primary text-xs font-medium px-3 py-1 rounded-full capitalize">
+              {recipe.category}
+            </span>
+          </div>
         </div>
       </div>
     </Link>

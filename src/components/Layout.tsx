@@ -6,11 +6,11 @@ export default function Layout() {
       <nav className="nav">
         <div className="container">
           <div className="flex items-center justify-between">
-            <NavLink to="/" className="text-xl font-semibold text-gray-900">
+            <NavLink to="/" className="nav-brand" end>
               What to Eat
             </NavLink>
             
-            <div className="flex gap-6">
+            <div className="nav-links">
               <NavLink 
                 to="/" 
                 className={({ isActive }) => 
@@ -41,7 +41,7 @@ export default function Layout() {
         </div>
       </nav>
       
-      <main className="container py-8">
+      <main className="container" style={{ paddingTop: '3rem', paddingBottom: '4rem' }}>
         <Outlet />
       </main>
     </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { format, subWeeks, subMonths } from 'date-fns'
-import { MealAnalytics } from '../types'
+import type { MealAnalytics } from '../types'
 import { analyticsApi } from '../services/api'
 
 export default function AnalyticsPage() {
@@ -8,10 +8,6 @@ export default function AnalyticsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [timeRange, setTimeRange] = useState<'week' | 'month' | 'all'>('month')
-
-  useEffect(() => {
-    loadAnalytics()
-  }, [timeRange, loadAnalytics])
 
   const loadAnalytics = useCallback(async () => {
     try {
@@ -41,6 +37,10 @@ export default function AnalyticsPage() {
       setLoading(false)
     }
   }, [timeRange])
+
+  useEffect(() => {
+    loadAnalytics()
+  }, [loadAnalytics])
 
   if (loading) {
     return (
