@@ -1,6 +1,9 @@
 import { NavLink, Outlet } from 'react-router-dom'
+import { UserButton, useUser } from '@clerk/clerk-react'
 
 export default function Layout() {
+  const { user } = useUser()
+
   return (
     <div className="min-h-screen bg-background">
       <nav className="border-b">
@@ -35,6 +38,14 @@ export default function Layout() {
             >
               統計
             </NavLink>
+            
+            {/* User menu */}
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">
+                歡迎, {user?.firstName || user?.username}
+              </span>
+              <UserButton afterSignOutUrl="/" />
+            </div>
           </div>
         </div>
       </nav>

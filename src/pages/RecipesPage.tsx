@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Clock, Users, ChefHat } from 'lucide-react'
+import { useAuth } from '@clerk/clerk-react'
 import type { Recipe } from '../types'
 import { recipeApi } from '../services/api'
 import { Card, CardContent } from '@/components/ui/card'
@@ -10,6 +11,7 @@ export default function RecipesPage() {
   const [recipes, setRecipes] = useState<Recipe[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const { getToken } = useAuth()
 
   useEffect(() => {
     loadRecipes()
@@ -18,7 +20,8 @@ export default function RecipesPage() {
   const loadRecipes = async () => {
     try {
       setLoading(true)
-      const data = await recipeApi.getAll()
+      const token = await getToken()
+      const data = await recipeApi.getAll(token)
       setRecipes(data)
       setError(null)
     } catch (err) {
