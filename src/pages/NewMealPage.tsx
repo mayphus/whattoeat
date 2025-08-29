@@ -37,7 +37,8 @@ export default function NewMealPage() {
 
   const loadRecipes = async () => {
     try {
-      const data = await recipeApi.getAll()
+      const token = await getToken()
+      const data = await recipeApi.getAll(token)
       setRecipes(data)
     } catch (err) {
       console.error('Failed to load recipes:', err)

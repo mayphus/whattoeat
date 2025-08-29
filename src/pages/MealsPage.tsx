@@ -4,6 +4,7 @@ import { format, startOfDay, endOfDay } from 'date-fns'
 import { AlertCircle, Clock } from 'lucide-react'
 import type { Meal } from '../types'
 import { mealApi } from '../services/api'
+import { useAuth } from '@clerk/clerk-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -14,13 +15,15 @@ export default function MealsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'))
+  const { getToken } = useAuth()
 
   const loadMeals = useCallback(async () => {
     try {
       setLoading(true)
       const startDate = format(startOfDay(new Date(selectedDate)), 'yyyy-MM-dd')
       const endDate = format(endOfDay(new Date(selectedDate)), 'yyyy-MM-dd')
-      const data = await mealApi.getAll(startDate, endDate)
+      const token = await getToken()
+      const data = await mealApi.getAll(startDate, endDate, token)
       setMeals(data)
       setError(null)
     } catch (err) {
@@ -28,7 +31,7 @@ export default function MealsPage() {
     } finally {
       setLoading(false)
     }
-  }, [selectedDate])
+  }, [selectedDate, getToken])
 
   useEffect(() => {
     loadMeals()

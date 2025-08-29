@@ -8,17 +8,18 @@ export class Database {
   }
 
   // Recipe methods
-  async createRecipe(recipe: Omit<Recipe, 'id' | 'createdAt' | 'updatedAt'>): Promise<Recipe> {
+  async createRecipe(recipe: Omit<Recipe, 'id' | 'createdAt' | 'updatedAt'>, userId: string): Promise<Recipe> {
     const id = crypto.randomUUID()
     const now = new Date().toISOString()
     
     const stmt = this.db.prepare(`
-      INSERT INTO recipes (id, name, description, image_url, prep_time, cook_time, servings, difficulty, category, instructions, calories, protein, carbs, fat, fiber, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO recipes (id, user_id, name, description, image_url, prep_time, cook_time, servings, difficulty, category, instructions, calories, protein, carbs, fat, fiber, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `)
     
     await stmt.bind(
       id,
+      userId,
       recipe.name,
       recipe.description || null,
       recipe.imageUrl || null,
@@ -47,12 +48,12 @@ export class Database {
       await ingredientStmt.bind(ingredientId, id, ingredient.name, ingredient.amount, ingredient.unit).run()
     }
 
-    return this.getRecipeById(id) as Promise<Recipe>
+    return this.getRecipeById(id, userId) as Promise<Recipe>
   }
 
-  async getRecipes(): Promise<Recipe[]> {
-    const stmt = this.db.prepare('SELECT * FROM recipes ORDER BY created_at DESC')
-    const result = await stmt.all()
+  async getRecipes(userId: string): Promise<Recipe[]> {
+    const stmt = this.db.prepare('SELECT * FROM recipes WHERE user_id = ? ORDER BY created_at DESC')
+    const result = await stmt.bind(userId).all()
     
     const recipes: Recipe[] = []
     for (const row of result.results) {
@@ -63,16 +64,16 @@ export class Database {
     return recipes
   }
 
-  async getRecipeById(id: string): Promise<Recipe | null> {
-    const stmt = this.db.prepare('SELECT * FROM recipes WHERE id = ?')
-    const result = await stmt.bind(id).first()
+  async getRecipeById(id: string, userId: string): Promise<Recipe | null> {
+    const stmt = this.db.prepare('SELECT * FROM recipes WHERE id = ? AND user_id = ?')
+    const result = await stmt.bind(id, userId).first()
     
     if (!result) return null
     
     return this.mapRowToRecipe(result)
   }
 
-  async updateRecipe(id: string, updates: Partial<Recipe>): Promise<Recipe | null> {
+  async updateRecipe(id: string, updates: Partial<Recipe>, userId: string): Promise<Recipe | null> {
     const now = new Date().toISOString()
     
     // Update recipe
@@ -84,7 +85,7 @@ export class Database {
       WHERE id = ?
     `)
     
-    const existingRecipe = await this.getRecipeById(id)
+    const existingRecipe = await this.getRecipeById(id, userId)
     if (!existingRecipe) return null
     
     await stmt.bind(
@@ -123,7 +124,7 @@ export class Database {
       }
     }
 
-    return this.getRecipeById(id)
+    return this.getRecipeById(id, userId)
   }
 
   private async mapRowToRecipe(row: Record<string, unknown>): Promise<Recipe> {
@@ -163,17 +164,18 @@ export class Database {
   }
 
   // Meal methods
-  async createMeal(meal: Omit<Meal, 'id' | 'createdAt'>): Promise<Meal> {
+  async createMeal(meal: Omit<Meal, 'id' | 'createdAt'>, userId: string): Promise<Meal> {
     const id = crypto.randomUUID()
     const now = new Date().toISOString()
     
     const stmt = this.db.prepare(`
-      INSERT INTO meals (id, date, meal_type, recipe_id, custom_food_name, portion, notes, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO meals (id, user_id, date, meal_type, recipe_id, custom_food_name, portion, notes, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `)
     
     await stmt.bind(
       id,
+      userId,
       meal.date,
       meal.mealType,
       meal.recipeId || null,
@@ -183,23 +185,22 @@ export class Database {
       now
     ).run()
 
-    return this.getMealById(id) as Promise<Meal>
+    return this.getMealById(id, userId) as Promise<Meal>
   }
 
-  async getMeals(startDate?: string, endDate?: string): Promise<Meal[]> {
-    let query = 'SELECT * FROM meals'
-    const params: string[] = []
+  async getMeals(userId: string, startDate?: string, endDate?: string): Promise<Meal[]> {
+    let query = 'SELECT * FROM meals WHERE user_id = ?'
+    const params: string[] = [userId]
     
     if (startDate || endDate) {
-      query += ' WHERE '
       if (startDate && endDate) {
-        query += 'date >= ? AND date <= ?'
+        query += ' AND date >= ? AND date <= ?'
         params.push(startDate, endDate)
       } else if (startDate) {
-        query += 'date >= ?'
+        query += ' AND date >= ?'
         params.push(startDate)
       } else if (endDate) {
-        query += 'date <= ?'
+        query += ' AND date <= ?'
         params.push(endDate)
       }
     }
@@ -211,26 +212,26 @@ export class Database {
     
     const meals: Meal[] = []
     for (const row of result.results) {
-      const meal = await this.mapRowToMeal(row)
+      const meal = await this.mapRowToMeal(row, userId)
       meals.push(meal)
     }
     
     return meals
   }
 
-  async getMealById(id: string): Promise<Meal | null> {
-    const stmt = this.db.prepare('SELECT * FROM meals WHERE id = ?')
-    const result = await stmt.bind(id).first()
+  async getMealById(id: string, userId: string): Promise<Meal | null> {
+    const stmt = this.db.prepare('SELECT * FROM meals WHERE id = ? AND user_id = ?')
+    const result = await stmt.bind(id, userId).first()
     
     if (!result) return null
     
-    return this.mapRowToMeal(result)
+    return this.mapRowToMeal(result, userId)
   }
 
-  private async mapRowToMeal(row: Record<string, unknown>): Promise<Meal> {
+  private async mapRowToMeal(row: Record<string, unknown>, userId: string): Promise<Meal> {
     let recipe: Recipe | undefined
     if (row.recipe_id) {
-      recipe = await this.getRecipeById(row.recipe_id as string) || undefined
+      recipe = await this.getRecipeById(row.recipe_id as string, userId) || undefined
     }
 
     return {
@@ -247,8 +248,8 @@ export class Database {
   }
 
   // Analytics methods
-  async getAnalytics(startDate?: string, endDate?: string): Promise<MealAnalytics> {
-    const meals = await this.getMeals(startDate, endDate)
+  async getAnalytics(userId: string, startDate?: string, endDate?: string): Promise<MealAnalytics> {
+    const meals = await this.getMeals(userId, startDate, endDate)
     
     // Total meals
     const totalMeals = meals.length

@@ -27,7 +27,8 @@ export default function RecipeDetailPage() {
   const loadRecipe = async (recipeId: string) => {
     try {
       setLoading(true)
-      const data = await recipeApi.getById(recipeId)
+      const token = await getToken()
+      const data = await recipeApi.getById(recipeId, token)
       setRecipe(data)
       setError(null)
     } catch (err) {

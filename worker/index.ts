@@ -50,33 +50,37 @@ export default {
       }
     }
 
-    // Guard: Require auth for write operations (POST/PUT)
-    const requireAuthForWrite = async () => {
+    // Guard: Require auth, return user or Response
+    const requireUser = async (): Promise<{ userId: string } | Response> => {
       const verified = await verifyClerkToken()
       if (!verified) {
         return Response.json({ success: false, error: 'Unauthorized' }, { status: 401, headers: corsHeaders })
       }
-      return null
+      return verified
     }
 
     try {
       // Recipe endpoints
       if (url.pathname === '/api/recipes' && request.method === 'GET') {
-        const recipes = await db.getRecipes()
+        const user = await requireUser()
+        if (user instanceof Response) return user
+        const recipes = await db.getRecipes(user.userId)
         return Response.json({ success: true, data: recipes }, { headers: corsHeaders })
       }
 
       if (url.pathname === '/api/recipes' && request.method === 'POST') {
-        const unauth = await requireAuthForWrite()
-        if (unauth) return unauth
+        const user = await requireUser()
+        if (user instanceof Response) return user
         const recipe = await request.json()
-        const createdRecipe = await db.createRecipe(recipe as any)
+        const createdRecipe = await db.createRecipe(recipe as any, user.userId)
         return Response.json({ success: true, data: createdRecipe }, { headers: corsHeaders })
       }
 
       if (url.pathname.startsWith('/api/recipes/') && request.method === 'GET') {
+        const user = await requireUser()
+        if (user instanceof Response) return user
         const id = url.pathname.split('/')[3]
-        const recipe = await db.getRecipeById(id)
+        const recipe = await db.getRecipeById(id, user.userId)
         if (!recipe) {
           return Response.json({ success: false, error: 'Recipe not found' }, { status: 404, headers: corsHeaders })
         }
@@ -84,11 +88,11 @@ export default {
       }
 
       if (url.pathname.startsWith('/api/recipes/') && request.method === 'PUT') {
-        const unauth = await requireAuthForWrite()
-        if (unauth) return unauth
+        const user = await requireUser()
+        if (user instanceof Response) return user
         const id = url.pathname.split('/')[3]
         const updates = await request.json()
-        const updatedRecipe = await db.updateRecipe(id, updates as any)
+        const updatedRecipe = await db.updateRecipe(id, updates as any, user.userId)
         if (!updatedRecipe) {
           return Response.json({ success: false, error: 'Recipe not found' }, { status: 404, headers: corsHeaders })
         }
@@ -97,23 +101,27 @@ export default {
 
       // Meal endpoints
       if (url.pathname === '/api/meals' && request.method === 'GET') {
+        const user = await requireUser()
+        if (user instanceof Response) return user
         const startDate = url.searchParams.get('startDate') || undefined
         const endDate = url.searchParams.get('endDate') || undefined
-        const meals = await db.getMeals(startDate, endDate)
+        const meals = await db.getMeals(user.userId, startDate, endDate)
         return Response.json({ success: true, data: meals }, { headers: corsHeaders })
       }
 
       if (url.pathname === '/api/meals' && request.method === 'POST') {
-        const unauth = await requireAuthForWrite()
-        if (unauth) return unauth
+        const user = await requireUser()
+        if (user instanceof Response) return user
         const meal = await request.json()
-        const createdMeal = await db.createMeal(meal as any)
+        const createdMeal = await db.createMeal(meal as any, user.userId)
         return Response.json({ success: true, data: createdMeal }, { headers: corsHeaders })
       }
 
       if (url.pathname.startsWith('/api/meals/') && request.method === 'GET') {
+        const user = await requireUser()
+        if (user instanceof Response) return user
         const id = url.pathname.split('/')[3]
-        const meal = await db.getMealById(id)
+        const meal = await db.getMealById(id, user.userId)
         if (!meal) {
           return Response.json({ success: false, error: 'Meal not found' }, { status: 404, headers: corsHeaders })
         }
@@ -122,16 +130,18 @@ export default {
 
       // Analytics endpoint
       if (url.pathname === '/api/analytics' && request.method === 'GET') {
+        const user = await requireUser()
+        if (user instanceof Response) return user
         const startDate = url.searchParams.get('startDate') || undefined
         const endDate = url.searchParams.get('endDate') || undefined
-        const analytics = await db.getAnalytics(startDate, endDate)
+        const analytics = await db.getAnalytics(user.userId, startDate, endDate)
         return Response.json({ success: true, data: analytics }, { headers: corsHeaders })
       }
 
       // Image upload endpoint
       if (url.pathname === '/api/upload' && request.method === 'POST') {
-        const unauth = await requireAuthForWrite()
-        if (unauth) return unauth
+        const user = await requireUser()
+        if (user instanceof Response) return user
         const formData = await request.formData()
         const file = formData.get('image') as File
         

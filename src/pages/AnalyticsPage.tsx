@@ -3,6 +3,7 @@ import { format, subWeeks, subMonths } from 'date-fns'
 import { AlertCircle } from 'lucide-react'
 import type { MealAnalytics } from '../types'
 import { analyticsApi } from '../services/api'
+import { useAuth } from '@clerk/clerk-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -12,6 +13,7 @@ export default function AnalyticsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [timeRange, setTimeRange] = useState<'week' | 'month' | 'all'>('month')
+  const { getToken } = useAuth()
 
   const loadAnalytics = useCallback(async () => {
     try {
@@ -32,7 +34,8 @@ export default function AnalyticsPage() {
           break
       }
       
-      const data = await analyticsApi.get(startDate, format(today, 'yyyy-MM-dd'))
+      const token = await getToken()
+      const data = await analyticsApi.get(startDate, format(today, 'yyyy-MM-dd'), token)
       setAnalytics(data)
       setError(null)
     } catch (err) {
@@ -40,7 +43,7 @@ export default function AnalyticsPage() {
     } finally {
       setLoading(false)
     }
-  }, [timeRange])
+  }, [timeRange, getToken])
 
   useEffect(() => {
     loadAnalytics()
