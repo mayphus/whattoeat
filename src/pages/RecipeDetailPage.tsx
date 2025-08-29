@@ -58,7 +58,7 @@ export default function RecipeDetailPage() {
   )
 
   return (
-    <div className="container-sm">
+    <div className="max-w-2xl mx-auto">
       <div className="mb-6">
         <Link to="/" className="text-sm text-gray-600 hover:text-gray-900">
           ← Back to Recipes
@@ -146,8 +146,8 @@ export default function RecipeDetailPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 grid-lg-3 gap-8">
-        <div className="grid-lg-2">
+      <div className="space-y-8">
+        <div>
           {/* Ingredients */}
           <div className="mb-8">
             <h2 className="text-xl font-semibold mb-4">Ingredients</h2>

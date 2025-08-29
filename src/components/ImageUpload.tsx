@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import type { DragEvent, ChangeEvent } from 'react'
 import { imageApi } from '../services/api'
+import { Button } from '@/components/ui/button'
 
 interface ImageUploadProps {
   onImageUploaded: (imageUrl: string) => void
@@ -131,20 +132,23 @@ export default function ImageUpload({ onImageUploaded, currentImageUrl, classNam
             {!isUploading && (
               <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200 rounded-xl flex items-center justify-center">
                 <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 space-x-3">
-                  <button
+                  <Button
                     type="button"
                     onClick={handleClick}
-                    className="btn btn-small btn-secondary"
+                    size="sm"
+                    variant="secondary"
                   >
                     Change
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     type="button"
                     onClick={removeImage}
-                    className="btn btn-small btn-ghost text-white hover:bg-white/20"
+                    size="sm"
+                    variant="ghost"
+                    className="text-white hover:bg-white/20"
                   >
                     Remove
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}

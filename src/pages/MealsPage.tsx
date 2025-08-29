@@ -1,8 +1,13 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { format, startOfDay, endOfDay } from 'date-fns'
+import { AlertCircle, Clock } from 'lucide-react'
 import type { Meal } from '../types'
 import { mealApi } from '../services/api'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Input } from '@/components/ui/input'
 
 export default function MealsPage() {
   const [meals, setMeals] = useState<Meal[]>([])
@@ -40,17 +45,20 @@ export default function MealsPage() {
   return (
     <div>
       {loading && (
-        <div className="text-center py-12">
-          <p className="text-gray-600">載入用餐記錄中...</p>
+        <div className="flex items-center justify-center py-12">
+          <p className="text-muted-foreground">載入用餐記錄中...</p>
         </div>
       )}
 
       {error && (
-        <div className="text-center py-12">
-          <p className="text-error mb-4">{error}</p>
-          <button onClick={loadMeals} className="btn btn-secondary">
+        <div className="flex flex-col items-center justify-center py-12 space-y-4">
+          <Alert variant="destructive" className="max-w-md">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+          <Button onClick={loadMeals} variant="secondary">
             重試
-          </button>
+          </Button>
         </div>
       )}
 
@@ -59,37 +67,41 @@ export default function MealsPage() {
           {meals.length === 0 ? (
             <>
               <div className="flex justify-end mb-8">
-                <input
+                <Input
                   type="date"
                   value={selectedDate}
                   onChange={(e) => setSelectedDate(e.target.value)}
-                  className="btn btn-secondary"
+                  className="w-auto"
                 />
               </div>
               <div className="min-h-[50vh] flex items-center justify-center">
-                <Link to="/meals/new" className="btn btn-primary btn-hero">
-                  記錄用餐
-                </Link>
+                <Button asChild size="lg">
+                  <Link to="/meals/new">
+                    記錄用餐
+                  </Link>
+                </Button>
               </div>
             </>
           ) : (
             <>
-              <div className="flex items-center justify-between mb-8">
-                <h1>用餐記錄</h1>
-                <div className="flex items-center gap-4">
-                  <input
+              <div className="flex flex-col space-y-4 mb-8">
+                <h1 className="text-2xl font-semibold">用餐記錄</h1>
+                <div className="flex justify-center items-center gap-4">
+                  <Input
                     type="date"
                     value={selectedDate}
                     onChange={(e) => setSelectedDate(e.target.value)}
-                    className="btn btn-secondary"
+                    className="w-auto"
                   />
-                  <Link to="/meals/new" className="btn btn-primary">
-                    記錄用餐
-                  </Link>
+                  <Button asChild>
+                    <Link to="/meals/new">
+                      記錄用餐
+                    </Link>
+                  </Button>
                 </div>
               </div>
               <div className="mb-6">
-                <h2 className="text-lg font-medium">
+                <h2 className="text-lg font-medium text-muted-foreground">
                   {format(new Date(selectedDate), 'MMMM d, yyyy')}
                 </h2>
               </div>
@@ -123,11 +135,13 @@ function MealTypeSection({ mealType, meals }: MealTypeSectionProps) {
       </h3>
       
       {meals.length === 0 ? (
-        <div className="card">
-          <p className="text-gray-500 text-center py-4">
-            尚無{mealType === 'breakfast' ? '早餐' : mealType === 'lunch' ? '午餐' : mealType === 'dinner' ? '晚餐' : '點心'}記錄
-          </p>
-        </div>
+        <Card>
+          <CardContent className="p-6">
+            <p className="text-muted-foreground text-center">
+              尚無{mealType === 'breakfast' ? '早餐' : mealType === 'lunch' ? '午餐' : mealType === 'dinner' ? '晚餐' : '點心'}記錄
+            </p>
+          </CardContent>
+        </Card>
       ) : (
         <div className="grid gap-4">
           {meals.map((meal) => (
@@ -145,46 +159,51 @@ interface MealCardProps {
 
 function MealCard({ meal }: MealCardProps) {
   return (
-    <div className="card">
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          {meal.recipe ? (
-            <div>
-              <Link 
-                to={`/recipes/${meal.recipe.id}`}
-                className="text-lg font-medium hover:text-primary"
-              >
-                {meal.recipe.name}
-              </Link>
-              {meal.portion !== 1 && (
-                <span className="text-gray-500 ml-2">
-                  ({meal.portion}x portion)
-                </span>
-              )}
-            </div>
-          ) : (
-            <h4 className="text-lg font-medium">{meal.customFoodName}</h4>
-          )}
+    <Card>
+      <CardContent className="p-6">
+        <div className="flex items-start justify-between">
+          <div className="flex-1">
+            {meal.recipe ? (
+              <div>
+                <Link 
+                  to={`/recipes/${meal.recipe.id}`}
+                  className="text-lg font-medium hover:text-primary transition-colors"
+                >
+                  {meal.recipe.name}
+                </Link>
+                {meal.portion !== 1 && (
+                  <span className="text-muted-foreground ml-2">
+                    ({meal.portion}x 份量)
+                  </span>
+                )}
+              </div>
+            ) : (
+              <h4 className="text-lg font-medium">{meal.customFoodName}</h4>
+            )}
 
-          {meal.notes && (
-            <p className="text-gray-600 text-sm mt-2">{meal.notes}</p>
-          )}
+            {meal.notes && (
+              <p className="text-muted-foreground text-sm mt-2">{meal.notes}</p>
+            )}
 
-          {meal.recipe && (
-            <div className="mt-3 flex items-center gap-4 text-sm text-gray-500">
-              <span>{meal.recipe.prepTime + meal.recipe.cookTime} min</span>
-              <span className="capitalize">{meal.recipe.difficulty}</span>
-              {meal.recipe.nutrition?.calories && (
-                <span>{Math.round(meal.recipe.nutrition.calories * meal.portion)} cal</span>
-              )}
-            </div>
-          )}
+            {meal.recipe && (
+              <div className="mt-3 flex items-center gap-4 text-sm text-muted-foreground">
+                <div className="flex items-center gap-1">
+                  <Clock className="h-3 w-3" />
+                  {meal.recipe.prepTime + meal.recipe.cookTime} 分鐘
+                </div>
+                <span className="capitalize">{meal.recipe.difficulty}</span>
+                {meal.recipe.nutrition?.calories && (
+                  <span>{Math.round(meal.recipe.nutrition.calories * meal.portion)} 卡</span>
+                )}
+              </div>
+            )}
+          </div>
+
+          <div className="text-right text-sm text-muted-foreground">
+            {format(new Date(meal.createdAt), 'h:mm a')}
+          </div>
         </div>
-
-        <div className="text-right text-sm text-gray-500">
-          {format(new Date(meal.createdAt), 'h:mm a')}
-        </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   )
 }

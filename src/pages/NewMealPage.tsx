@@ -1,8 +1,16 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { format } from 'date-fns'
+import { AlertCircle } from 'lucide-react'
 import type { Recipe } from '../types'
 import { recipeApi, mealApi } from '../services/api'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
 
 export default function NewMealPage() {
   const navigate = useNavigate()
@@ -74,167 +82,151 @@ export default function NewMealPage() {
   }
 
   return (
-    <div className="container-sm">
+    <div className="max-w-lg mx-auto">
       <div className="mb-8">
-        <h1>記錄用餐</h1>
+        <h1 className="text-2xl font-semibold">記錄用餐</h1>
       </div>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-error text-sm">{error}</p>
-        </div>
+        <Alert variant="destructive" className="mb-6">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="card">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="date" className="block text-sm font-medium mb-2">
-                日期
-              </label>
-              <input
-                type="date"
-                id="date"
-                value={formData.date}
-                onChange={(e) => handleInputChange('date', e.target.value)}
-                required
-              />
-            </div>
+        <Card>
+          <CardContent className="p-6">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="date">日期</Label>
+                <Input
+                  type="date"
+                  id="date"
+                  value={formData.date}
+                  onChange={(e) => handleInputChange('date', e.target.value)}
+                  required
+                />
+              </div>
 
-            <div>
-              <label htmlFor="mealType" className="block text-sm font-medium mb-2">
-                用餐類型
-              </label>
-              <select
-                id="mealType"
-                value={formData.mealType}
-                onChange={(e) => handleInputChange('mealType', e.target.value)}
-                required
-              >
-                <option value="breakfast">早餐</option>
-                <option value="lunch">午餐</option>
-                <option value="dinner">晚餐</option>
-                <option value="snack">點心</option>
-              </select>
+              <div className="space-y-2">
+                <Label htmlFor="mealType">用餐類型</Label>
+                <Select value={formData.mealType} onValueChange={(value) => handleInputChange('mealType', value)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="breakfast">早餐</SelectItem>
+                    <SelectItem value="lunch">午餐</SelectItem>
+                    <SelectItem value="dinner">晚餐</SelectItem>
+                    <SelectItem value="snack">點心</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
-        <div className="card">
-          <div className="mb-4">
+        <Card>
+          <CardContent className="p-6 space-y-4">
             <div className="flex gap-4">
-              <label className="flex items-center">
+              <Label className="flex items-center space-x-2">
                 <input
                   type="radio"
                   name="foodType"
                   checked={!useCustomFood}
                   onChange={() => setUseCustomFood(false)}
-                  className="mr-2"
                 />
-                來自食譜
-              </label>
-              <label className="flex items-center">
+                <span>來自食譜</span>
+              </Label>
+              <Label className="flex items-center space-x-2">
                 <input
                   type="radio"
                   name="foodType"
                   checked={useCustomFood}
                   onChange={() => setUseCustomFood(true)}
-                  className="mr-2"
                 />
-                自定義食物
-              </label>
+                <span>自定義食物</span>
+              </Label>
             </div>
-          </div>
 
-          {useCustomFood ? (
-            <div>
-              <label htmlFor="customFoodName" className="block text-sm font-medium mb-2">
-                食物名稱
-              </label>
-              <input
-                type="text"
-                id="customFoodName"
-                value={formData.customFoodName}
-                onChange={(e) => handleInputChange('customFoodName', e.target.value)}
-                placeholder="例如：蘋果、三明治等"
-                required={useCustomFood}
-              />
-            </div>
-          ) : (
-            <div>
-              <label htmlFor="recipeId" className="block text-sm font-medium mb-2">
-                食譜
-              </label>
-              <select
-                id="recipeId"
-                value={formData.recipeId}
-                onChange={(e) => handleInputChange('recipeId', e.target.value)}
-                required={!useCustomFood}
-              >
-                <option value="">選擇食譜...</option>
-                {recipes.map((recipe) => (
-                  <option key={recipe.id} value={recipe.id}>
-                    {recipe.name}
-                  </option>
-                ))}
-              </select>
-              
-              {recipes.length === 0 && (
-                <p className="text-sm text-gray-500 mt-2">
-                  沒有可用的食譜。 <a href="/recipes/new" className="text-primary">先創建一個</a>。
-                </p>
-              )}
-            </div>
-          )}
-        </div>
+            {useCustomFood ? (
+              <div className="space-y-2">
+                <Label htmlFor="customFoodName">食物名稱</Label>
+                <Input
+                  type="text"
+                  id="customFoodName"
+                  value={formData.customFoodName}
+                  onChange={(e) => handleInputChange('customFoodName', e.target.value)}
+                  placeholder="例如：蘋果、三明治等"
+                  required={useCustomFood}
+                />
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <Label htmlFor="recipeId">食譜</Label>
+                <Select value={formData.recipeId} onValueChange={(value) => handleInputChange('recipeId', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="選擇食譜..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {recipes.map((recipe) => (
+                      <SelectItem key={recipe.id} value={recipe.id}>
+                        {recipe.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                
+                {recipes.length === 0 && (
+                  <p className="text-sm text-muted-foreground mt-2">
+                    沒有可用的食譜。 <Link to="/recipes/new" className="text-primary hover:underline">先創建一個</Link>。
+                  </p>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {!useCustomFood && (
-          <div className="card">
-            <label htmlFor="portion" className="block text-sm font-medium mb-2">
-              份量大小
-            </label>
-            <input
-              type="number"
-              id="portion"
-              min="0.1"
-              step="0.1"
-              value={formData.portion}
-              onChange={(e) => handleInputChange('portion', parseFloat(e.target.value) || 1)}
-            />
-            <p className="text-sm text-gray-500 mt-1">
-              1.0 = 整份食譜，0.5 = 半份，以此類推。
-            </p>
-          </div>
+          <Card>
+            <CardContent className="p-6 space-y-2">
+              <Label htmlFor="portion">份量大小</Label>
+              <Input
+                type="number"
+                id="portion"
+                min="0.1"
+                step="0.1"
+                value={formData.portion}
+                onChange={(e) => handleInputChange('portion', parseFloat(e.target.value) || 1)}
+              />
+              <p className="text-sm text-muted-foreground">
+                1.0 = 整份食譜，0.5 = 半份，以此類推。
+              </p>
+            </CardContent>
+          </Card>
         )}
 
-        <div className="card">
-          <label htmlFor="notes" className="block text-sm font-medium mb-2">
-            備註 (可選)
-          </label>
-          <textarea
-            id="notes"
-            rows={3}
-            value={formData.notes}
-            onChange={(e) => handleInputChange('notes', e.target.value)}
-            placeholder="關於這餐的任何額外備註..."
-          />
-        </div>
+        <Card>
+          <CardContent className="p-6 space-y-2">
+            <Label htmlFor="notes">備註 (可選)</Label>
+            <Textarea
+              id="notes"
+              rows={3}
+              value={formData.notes}
+              onChange={(e) => handleInputChange('notes', e.target.value)}
+              placeholder="關於這餐的任何額外備註..."
+            />
+          </CardContent>
+        </Card>
 
         <div className="flex gap-4">
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn btn-primary"
-          >
+          <Button type="submit" disabled={loading}>
             {loading ? '記錄中...' : '記錄用餐'}
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate('/meals')}
-            className="btn btn-secondary"
-          >
+          </Button>
+          <Button type="button" variant="secondary" onClick={() => navigate('/meals')}>
             取消
-          </button>
+          </Button>
         </div>
       </form>
     </div>

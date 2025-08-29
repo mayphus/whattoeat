@@ -1,8 +1,16 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Plus, X, AlertCircle } from 'lucide-react'
 import type { Ingredient } from '../types'
 import { recipeApi } from '../services/api'
 import ImageUpload from '../components/ImageUpload'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 
 export default function NewRecipePage() {
   const navigate = useNavigate()
@@ -110,302 +118,261 @@ export default function NewRecipePage() {
   }
 
   return (
-    <div className="container-sm">
-      <div className="mb-8">
-        <h1>新增食譜</h1>
+    <div className="mx-auto max-w-xl">
+      <div className="mb-6">
+        <h1 className="text-2xl font-semibold">新增食譜</h1>
       </div>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-error text-sm">{error}</p>
-        </div>
+        <Alert variant="destructive" className="mb-6">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            {error}
+          </AlertDescription>
+        </Alert>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-8">
-        {/* Basic Info */}
-        <div className="card">
-          <h2 className="text-lg font-medium mb-4">基本資訊</h2>
-          
-          <div className="grid gap-4">
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium mb-2">
-                食譜名稱 *
-              </label>
-              <input
-                type="text"
-                id="name"
-                value={formData.name}
-                onChange={(e) => handleInputChange('name', e.target.value)}
-                placeholder="我的美味食譜"
-                required
-              />
-            </div>
-
-            <div>
-              <label htmlFor="description" className="block text-sm font-medium mb-2">
-                描述
-              </label>
-              <textarea
-                id="description"
-                rows={3}
-                value={formData.description}
-                onChange={(e) => handleInputChange('description', e.target.value)}
-                placeholder="簡單描述你的食譜..."
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-3">
-                食譜圖片
-              </label>
-              <ImageUpload 
-                onImageUploaded={(imageUrl) => handleInputChange('imageUrl', imageUrl)}
-                currentImageUrl={formData.imageUrl}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="prepTime" className="block text-sm font-medium mb-2">
-                  準備時間 (分鐘)
-                </label>
-                <input
-                  type="number"
-                  id="prepTime"
-                  min="0"
-                  value={formData.prepTime}
-                  onChange={(e) => handleInputChange('prepTime', parseInt(e.target.value) || 0)}
-                />
-              </div>
-
-              <div>
-                <label htmlFor="cookTime" className="block text-sm font-medium mb-2">
-                  烹飪時間 (分鐘)
-                </label>
-                <input
-                  type="number"
-                  id="cookTime"
-                  min="0"
-                  value={formData.cookTime}
-                  onChange={(e) => handleInputChange('cookTime', parseInt(e.target.value) || 0)}
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <label htmlFor="servings" className="block text-sm font-medium mb-2">
-                  份量
-                </label>
-                <input
-                  type="number"
-                  id="servings"
-                  min="1"
-                  value={formData.servings}
-                  onChange={(e) => handleInputChange('servings', parseInt(e.target.value) || 1)}
-                />
-              </div>
-
-              <div>
-                <label htmlFor="difficulty" className="block text-sm font-medium mb-2">
-                  難度
-                </label>
-                <select
-                  id="difficulty"
-                  value={formData.difficulty}
-                  onChange={(e) => handleInputChange('difficulty', e.target.value)}
-                >
-                  <option value="easy">簡單</option>
-                  <option value="medium">中等</option>
-                  <option value="hard">困難</option>
-                </select>
-              </div>
-
-              <div>
-                <label htmlFor="category" className="block text-sm font-medium mb-2">
-                  類別
-                </label>
-                <input
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <Card>
+          <CardContent className="p-6">
+            <div className="grid gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="name">食譜名稱 *</Label>
+                <Input
                   type="text"
-                  id="category"
-                  value={formData.category}
-                  onChange={(e) => handleInputChange('category', e.target.value)}
-                  placeholder="main, dessert, appetizer..."
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  placeholder="我的美味食譜"
+                  required
                 />
               </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="description">描述</Label>
+                <Textarea
+                  id="description"
+                  value={formData.description}
+                  onChange={(e) => handleInputChange('description', e.target.value)}
+                  placeholder="簡單描述你的食譜..."
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label>食譜圖片</Label>
+                <ImageUpload 
+                  onImageUploaded={(imageUrl) => handleInputChange('imageUrl', imageUrl)}
+                  currentImageUrl={formData.imageUrl}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="prepTime">準備時間 (分鐘)</Label>
+                  <Input
+                    type="number"
+                    id="prepTime"
+                    min="0"
+                    value={formData.prepTime || ''}
+                    onChange={(e) => handleInputChange('prepTime', parseInt(e.target.value) || 0)}
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="cookTime">烹飪時間 (分鐘)</Label>
+                  <Input
+                    type="number"
+                    id="cookTime"
+                    min="0"
+                    value={formData.cookTime || ''}
+                    onChange={(e) => handleInputChange('cookTime', parseInt(e.target.value) || 0)}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="servings">份量</Label>
+                  <Input
+                    type="number"
+                    id="servings"
+                    min="1"
+                    value={formData.servings || ''}
+                    onChange={(e) => handleInputChange('servings', parseInt(e.target.value) || 1)}
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <Label>難度</Label>
+                  <Select value={formData.difficulty} onValueChange={(value) => handleInputChange('difficulty', value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="選擇難度" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="easy">簡單</SelectItem>
+                      <SelectItem value="medium">中等</SelectItem>
+                      <SelectItem value="hard">困難</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="category">類別</Label>
+                  <Input
+                    type="text"
+                    id="category"
+                    value={formData.category}
+                    onChange={(e) => handleInputChange('category', e.target.value)}
+                    placeholder="主食, 甜點..."
+                  />
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
-        {/* Ingredients */}
-        <div className="card">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-medium">材料</h2>
-            <button
-              type="button"
-              onClick={addIngredient}
-              className="text-primary text-sm hover:underline"
-            >
-              + 新增材料
-            </button>
-          </div>
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-medium">材料</h3>
+              <Button
+                type="button"
+                onClick={addIngredient}
+                variant="outline"
+                size="sm"
+              >
+                <Plus className="h-4 w-4" />
+                新增材料
+              </Button>
+            </div>
 
-          <div className="space-y-3">
-            {formData.ingredients.map((ingredient, index) => (
-              <div key={index} className="grid grid-cols-12 gap-3">
-                <div className="col-span-1">
-                  <input
+            <div className="grid gap-3">
+              {formData.ingredients.map((ingredient, index) => (
+                <div key={index} className="flex gap-2">
+                  <Input
                     type="number"
                     min="0"
                     step="0.1"
-                    value={ingredient.amount}
+                    value={ingredient.amount || ''}
                     onChange={(e) => handleIngredientChange(index, 'amount', parseFloat(e.target.value) || 0)}
                     placeholder="1"
+                    className="w-16"
                   />
-                </div>
-                <div className="col-span-2">
-                  <input
+                  <Input
                     type="text"
                     value={ingredient.unit}
                     onChange={(e) => handleIngredientChange(index, 'unit', e.target.value)}
                     placeholder="杯"
+                    className="w-20"
                   />
-                </div>
-                <div className="col-span-8">
-                  <input
+                  <Input
                     type="text"
                     value={ingredient.name}
                     onChange={(e) => handleIngredientChange(index, 'name', e.target.value)}
                     placeholder="材料名稱"
+                    className="flex-1"
                   />
-                </div>
-                <div className="col-span-1">
-                  <button
+                  <Button
                     type="button"
                     onClick={() => removeIngredient(index)}
-                    className="text-red-500 hover:text-red-700 text-lg"
+                    variant="ghost"
+                    size="sm"
                     disabled={formData.ingredients.length === 1}
                   >
-                    ×
-                  </button>
+                    <X className="h-4 w-4" />
+                  </Button>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
-        {/* Instructions */}
-        <div className="card">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-medium">制作步驟</h2>
-            <button
-              type="button"
-              onClick={addInstruction}
-              className="text-primary text-sm hover:underline"
-            >
-              + 新增步驟
-            </button>
-          </div>
-
-          <div className="space-y-4">
-            {formData.instructions.map((instruction, index) => (
-              <div key={index} className="flex gap-3">
-                <div className="flex-shrink-0 w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-sm font-medium">
-                  {index + 1}
-                </div>
-                <div className="flex-1">
-                  <textarea
-                    rows={2}
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-medium">制作步驟</h3>
+              <Button
+                type="button"
+                onClick={addInstruction}
+                variant="outline"
+                size="sm"
+              >
+                <Plus className="h-4 w-4" />
+                新增步驟
+              </Button>
+            </div>
+            
+            <div className="grid gap-4">
+              {formData.instructions.map((instruction, index) => (
+                <div key={index} className="flex gap-3">
+                  <div className="flex-shrink-0 w-6 h-6 bg-muted rounded-full flex items-center justify-center text-xs font-medium mt-1">
+                    {index + 1}
+                  </div>
+                  <Textarea
                     value={instruction}
                     onChange={(e) => handleInstructionChange(index, e.target.value)}
                     placeholder="描述這個步驟..."
+                    className="flex-1"
                   />
+                  <Button
+                    type="button"
+                    onClick={() => removeInstruction(index)}
+                    variant="ghost"
+                    size="sm"
+                    disabled={formData.instructions.length === 1}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => removeInstruction(index)}
-                  className="text-red-500 hover:text-red-700 text-lg"
-                  disabled={formData.instructions.length === 1}
-                >
-                  ×
-                </button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <h3 className="font-medium mb-4">營養成分 (可選)</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid gap-2">
+                <Label>熱量</Label>
+                <Input
+                  type="number"
+                  min="0"
+                  value={formData.nutrition.calories || ''}
+                  onChange={(e) => handleNutritionChange('calories', parseInt(e.target.value) || 0)}
+                />
               </div>
-            ))}
-          </div>
-        </div>
+              <div className="grid gap-2">
+                <Label>蛋白質 (g)</Label>
+                <Input
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  value={formData.nutrition.protein || ''}
+                  onChange={(e) => handleNutritionChange('protein', parseFloat(e.target.value) || 0)}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>碳水 (g)</Label>
+                <Input
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  value={formData.nutrition.carbs || ''}
+                  onChange={(e) => handleNutritionChange('carbs', parseFloat(e.target.value) || 0)}
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-        {/* Nutrition (Optional) */}
-        <div className="card">
-          <h2 className="text-lg font-medium mb-4">營養成分 (可選)</h2>
-          <div className="grid grid-cols-5 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">熱量</label>
-              <input
-                type="number"
-                min="0"
-                value={formData.nutrition.calories}
-                onChange={(e) => handleNutritionChange('calories', parseInt(e.target.value) || 0)}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">蛋白質 (g)</label>
-              <input
-                type="number"
-                min="0"
-                step="0.1"
-                value={formData.nutrition.protein}
-                onChange={(e) => handleNutritionChange('protein', parseFloat(e.target.value) || 0)}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">碳水化合物 (g)</label>
-              <input
-                type="number"
-                min="0"
-                step="0.1"
-                value={formData.nutrition.carbs}
-                onChange={(e) => handleNutritionChange('carbs', parseFloat(e.target.value) || 0)}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">脂肪 (g)</label>
-              <input
-                type="number"
-                min="0"
-                step="0.1"
-                value={formData.nutrition.fat}
-                onChange={(e) => handleNutritionChange('fat', parseFloat(e.target.value) || 0)}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">纖維 (g)</label>
-              <input
-                type="number"
-                min="0"
-                step="0.1"
-                value={formData.nutrition.fiber}
-                onChange={(e) => handleNutritionChange('fiber', parseFloat(e.target.value) || 0)}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Actions */}
-        <div className="flex gap-4">
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn btn-primary"
-          >
+        <div className="flex gap-3">
+          <Button type="submit" disabled={loading}>
             {loading ? '創建中...' : '創建食譜'}
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate('/')}
-            className="btn btn-secondary"
-          >
+          </Button>
+          <Button type="button" onClick={() => navigate('/')} variant="outline">
             取消
-          </button>
+          </Button>
         </div>
       </form>
     </div>

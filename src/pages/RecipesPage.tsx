@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { Clock, Users, ChefHat } from 'lucide-react'
 import type { Recipe } from '../types'
 import { recipeApi } from '../services/api'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 
 export default function RecipesPage() {
   const [recipes, setRecipes] = useState<Recipe[]>([])
@@ -37,12 +40,12 @@ export default function RecipesPage() {
     return (
       <div className="text-center py-12">
         <p className="text-error mb-4">{error}</p>
-        <button 
+        <Button 
           onClick={loadRecipes}
-          className="btn btn-secondary"
+          variant="secondary"
         >
           重試
-        </button>
+        </Button>
       </div>
     )
   }
@@ -50,20 +53,24 @@ export default function RecipesPage() {
   return (
     <div>
       {recipes.length === 0 ? (
-        <div className="min-h-[60vh] flex items-center justify-center">
-          <Link to="/recipes/new" className="btn btn-primary btn-hero">
-            新增食譜
-          </Link>
+        <div className="flex flex-col items-center justify-center py-16 px-4">
+          <p className="text-muted-foreground mb-4">還沒有食譜</p>
+          <Button asChild>
+            <Link to="/recipes/new">
+              新增食譜
+            </Link>
+          </Button>
         </div>
       ) : (
         <>
-          <div className="flex items-center justify-between mb-12">
-            <h1>食譜</h1>
-            <Link to="/recipes/new" className="btn btn-primary btn-large">
-              新增食譜
-            </Link>
+          <div className="flex justify-center mb-8">
+            <Button asChild>
+              <Link to="/recipes/new">
+                新增食譜
+              </Link>
+            </Button>
           </div>
-          <div className="grid grid-cols-1 grid-md-2 grid-lg-3 gap-8">
+          <div className="grid grid-cols-1 gap-4">
             {recipes.map((recipe) => (
               <RecipeCard key={recipe.id} recipe={recipe} />
             ))}
@@ -82,58 +89,39 @@ function RecipeCard({ recipe }: RecipeCardProps) {
   const totalTime = recipe.prepTime + recipe.cookTime
 
   return (
-    <Link to={`/recipes/${recipe.id}`} className="block group">
-      <div className="card card-interactive">
+    <Link to={`/recipes/${recipe.id}`} className="block">
+      <Card className="hover:shadow-sm transition-shadow">
         {recipe.imageUrl ? (
-          <div className="relative overflow-hidden rounded-xl mb-6 -mx-2 -mt-2">
-            <img 
-              src={recipe.imageUrl} 
-              alt={recipe.name}
-              className="w-full h-48 object-cover"
-            />
-          </div>
+          <img 
+            src={recipe.imageUrl} 
+            alt={recipe.name}
+            className="w-full h-36 object-cover rounded-t-lg"
+          />
         ) : (
-          <div className="w-full h-32 bg-gradient-to-br from-orange-100 to-orange-200 rounded-xl mb-6 -mx-2 -mt-2 flex items-center justify-center">
-            <span className="text-4xl opacity-60">🍽️</span>
+          <div className="w-full h-36 bg-muted rounded-t-lg flex items-center justify-center">
+            <ChefHat className="h-8 w-8 text-muted-foreground/50" />
           </div>
         )}
         
-        <div className="space-y-3">
-          <h3 className="text-xl font-semibold">
+        <CardContent className="p-4 space-y-2">
+          <h3 className="font-medium text-base">
             {recipe.name}
           </h3>
-        
-          {recipe.description && (
-            <p className="text-neutral-600 text-sm leading-relaxed line-clamp-2">
-              {recipe.description}
-            </p>
-          )}
-        
-          <div className="flex items-center gap-4 text-sm text-neutral-500">
-            <span className="flex items-center gap-1">
-              ⏱️ {totalTime} 分鐘
-            </span>
-            <span className="flex items-center gap-1">
-              👥 {recipe.servings}
-            </span>
-            <span className={`capitalize px-2 py-1 rounded-full text-xs font-medium ${
-              recipe.difficulty === 'easy' 
-                ? 'bg-green-100 text-green-700' 
-                : recipe.difficulty === 'medium'
-                ? 'bg-yellow-100 text-yellow-700'
-                : 'bg-red-100 text-red-700'
-            }`}>
-              {recipe.difficulty === 'easy' ? '簡單' : recipe.difficulty === 'medium' ? '中等' : '困難'}
-            </span>
+          
+          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+            {totalTime > 0 && (
+              <div className="flex items-center gap-1">
+                <Clock className="h-3 w-3" />
+                {totalTime}分鐘
+              </div>
+            )}
+            <div className="flex items-center gap-1">
+              <Users className="h-3 w-3" />
+              {recipe.servings}人份
+            </div>
           </div>
-        
-          <div>
-            <span className="inline-block bg-warm-100 text-primary text-xs font-medium px-3 py-1 rounded-full capitalize">
-              {recipe.category}
-            </span>
-          </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </Link>
   )
 }
