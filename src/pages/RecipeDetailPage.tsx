@@ -1,7 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { Clock, Users, ArrowLeft } from 'lucide-react'
 import type { Recipe } from '../types'
 import { recipeApi } from '../services/api'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 
 export default function RecipeDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -32,7 +37,7 @@ export default function RecipeDetailPage() {
   if (loading) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-600">Loading recipe...</p>
+        <p className="text-muted-foreground">載入食譜中...</p>
       </div>
     )
   }
@@ -60,9 +65,12 @@ export default function RecipeDetailPage() {
   return (
     <div className="max-w-2xl mx-auto">
       <div className="mb-6">
-        <Link to="/" className="text-sm text-gray-600 hover:text-gray-900">
-          ← Back to Recipes
-        </Link>
+        <Button variant="ghost" size="sm" asChild>
+          <Link to="/" className="text-muted-foreground hover:text-foreground">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            返回食譜列表
+          </Link>
+        </Button>
       </div>
 
       <div className="mb-8">
@@ -77,25 +85,25 @@ export default function RecipeDetailPage() {
         <div className="flex items-start justify-between mb-4">
           <div>
             {isEditing ? (
-              <input 
+              <Input 
                 type="text" 
                 value={recipe.name}
                 onChange={(e) => setRecipe(prev => prev ? {...prev, name: e.target.value} : prev)}
-                className="text-3xl font-semibold mb-2 w-full bg-transparent border-b border-gray-300 focus:border-primary outline-none"
+                className="text-3xl font-semibold mb-2 border-0 border-b rounded-none px-0 focus:border-primary"
               />
             ) : (
               <h1 className="text-3xl font-semibold mb-2">{recipe.name}</h1>
             )}
             {recipe.description && (
               isEditing ? (
-                <textarea
+                <Textarea
                   value={recipe.description}
                   onChange={(e) => setRecipe(prev => prev ? {...prev, description: e.target.value} : prev)}
-                  className="text-gray-600 text-lg w-full bg-transparent border-b border-gray-300 focus:border-primary outline-none resize-none"
+                  className="text-muted-foreground text-lg border-0 border-b rounded-none px-0 focus:border-primary resize-none"
                   rows={2}
                 />
               ) : (
-                <p className="text-gray-600 text-lg">{recipe.description}</p>
+                <p className="text-muted-foreground text-lg">{recipe.description}</p>
               )
             )}
           </div>
@@ -116,22 +124,26 @@ export default function RecipeDetailPage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-6 text-sm text-gray-600 mb-6">
+        <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground mb-6">
           <div className="flex items-center gap-2">
-            <span className="font-medium">Prep:</span>
-            <span>{recipe.prepTime} min</span>
+            <Clock className="h-4 w-4" />
+            <span className="font-medium">準備:</span>
+            <span>{recipe.prepTime} 分鐘</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="font-medium">Cook:</span>
-            <span>{recipe.cookTime} min</span>
+            <Clock className="h-4 w-4" />
+            <span className="font-medium">烹調:</span>
+            <span>{recipe.cookTime} 分鐘</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="font-medium">Total:</span>
-            <span>{totalTime} min</span>
+            <Clock className="h-4 w-4" />
+            <span className="font-medium">總時間:</span>
+            <span>{totalTime} 分鐘</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="font-medium">Servings:</span>
-            <span>{recipe.servings}</span>
+            <Users className="h-4 w-4" />
+            <span className="font-medium">份量:</span>
+            <span>{recipe.servings} 人份</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="font-medium">Difficulty:</span>
@@ -140,7 +152,7 @@ export default function RecipeDetailPage() {
         </div>
 
         <div className="mb-6">
-          <span className="inline-block bg-gray-100 text-gray-800 text-sm px-3 py-1 rounded-full">
+          <span className="inline-block bg-muted text-foreground text-sm px-3 py-1 rounded-full">
             {recipe.category}
           </span>
         </div>
@@ -150,14 +162,15 @@ export default function RecipeDetailPage() {
         <div>
           {/* Ingredients */}
           <div className="mb-8">
-            <h2 className="text-xl font-semibold mb-4">Ingredients</h2>
-            <div className="card">
-              <ul className="space-y-3">
+            <h2 className="text-xl font-semibold mb-4">食材</h2>
+            <Card>
+              <CardContent className="p-6">
+                <ul className="space-y-3">
                 {recipe.ingredients.map((ingredient, index) => (
                   <li key={ingredient.id} className="flex items-center justify-between">
                     {isEditing ? (
                       <>
-                        <input 
+                        <Input 
                           type="text"
                           value={ingredient.name}
                           onChange={(e) => {
@@ -165,10 +178,10 @@ export default function RecipeDetailPage() {
                             newIngredients[index] = {...ingredient, name: e.target.value}
                             setRecipe(prev => prev ? {...prev, ingredients: newIngredients} : prev)
                           }}
-                          className="font-medium bg-transparent border-b border-gray-300 focus:border-primary outline-none flex-1 mr-4"
+                          className="font-medium border-0 border-b rounded-none px-0 focus:border-primary flex-1 mr-4"
                         />
                         <div className="flex items-center gap-2">
-                          <input 
+                          <Input 
                             type="number"
                             value={ingredient.amount}
                             onChange={(e) => {
@@ -176,9 +189,9 @@ export default function RecipeDetailPage() {
                               newIngredients[index] = {...ingredient, amount: parseFloat(e.target.value) || 0}
                               setRecipe(prev => prev ? {...prev, ingredients: newIngredients} : prev)
                             }}
-                            className="w-16 bg-transparent border-b border-gray-300 focus:border-primary outline-none text-center"
+                            className="w-16 border-0 border-b rounded-none px-0 focus:border-primary text-center"
                           />
-                          <input 
+                          <Input 
                             type="text"
                             value={ingredient.unit}
                             onChange={(e) => {
@@ -186,50 +199,53 @@ export default function RecipeDetailPage() {
                               newIngredients[index] = {...ingredient, unit: e.target.value}
                               setRecipe(prev => prev ? {...prev, ingredients: newIngredients} : prev)
                             }}
-                            className="w-16 bg-transparent border-b border-gray-300 focus:border-primary outline-none text-center"
+                            className="w-16 border-0 border-b rounded-none px-0 focus:border-primary text-center"
                           />
                         </div>
                       </>
                     ) : (
                       <>
                         <span className="font-medium">{ingredient.name}</span>
-                        <span className="text-gray-600">
+                        <span className="text-muted-foreground">
                           {ingredient.amount} {ingredient.unit}
                         </span>
                       </>
                     )}
                   </li>
                 ))}
-              </ul>
-            </div>
+                </ul>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Instructions */}
           <div className="mb-8">
-            <h2 className="text-xl font-semibold mb-4">Instructions</h2>
+            <h2 className="text-xl font-semibold mb-4">烹調步驟</h2>
             <div className="space-y-4">
               {recipe.instructions.map((instruction, index) => (
-                <div key={index} className="card">
-                  <div className="flex gap-4">
-                    <div className="flex-shrink-0 w-8 h-8 bg-gray-900 text-white rounded-full flex items-center justify-center text-sm font-medium">
+                <Card key={index}>
+                  <CardContent className="p-6">
+                    <div className="flex gap-4">
+                    <div className="flex-shrink-0 w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-medium">
                       {index + 1}
                     </div>
                     {isEditing ? (
-                      <textarea
+                      <Textarea
                         value={instruction}
                         onChange={(e) => {
                           const newInstructions = [...recipe.instructions]
                           newInstructions[index] = e.target.value
                           setRecipe(prev => prev ? {...prev, instructions: newInstructions} : prev)
                         }}
-                        className="flex-1 leading-relaxed bg-transparent border-b border-gray-300 focus:border-primary outline-none resize-none"
+                        className="flex-1 leading-relaxed border-0 border-b rounded-none px-0 focus:border-primary resize-none"
                         rows={2}
                       />
                     ) : (
                       <p className="flex-1 leading-relaxed">{instruction}</p>
                     )}
-                  </div>
-                </div>
+                    </div>
+                  </CardContent>
+                </Card>
               ))}
             </div>
           </div>
@@ -276,23 +292,27 @@ export default function RecipeDetailPage() {
           )}
 
           {/* Recipe Info */}
-          <div className="card">
-            <h3 className="text-lg font-medium mb-4">Recipe Info</h3>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">食譜資訊</CardTitle>
+            </CardHeader>
+            <CardContent>
             <div className="space-y-3 text-sm">
               <div className="flex items-center justify-between">
-                <span className="text-gray-600">Created</span>
+                <span className="text-muted-foreground">建立日期</span>
                 <span>{new Date(recipe.createdAt).toLocaleDateString()}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-gray-600">Last Updated</span>
+                <span className="text-muted-foreground">最後更新</span>
                 <span>{new Date(recipe.updatedAt).toLocaleDateString()}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-gray-600">Recipe ID</span>
+                <span className="text-muted-foreground">食譜 ID</span>
                 <span className="font-mono text-xs">{recipe.id}</span>
               </div>
-            </div>
-          </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

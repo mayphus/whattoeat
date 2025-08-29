@@ -31,7 +31,7 @@ export default function RecipesPage() {
   if (loading) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-600">載入食譜中...</p>
+        <p className="text-muted-foreground">載入食譜中...</p>
       </div>
     )
   }
