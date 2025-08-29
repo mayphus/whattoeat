@@ -26,6 +26,9 @@
 			"binding": "IMAGES",
 			"bucket_name": "whattoeat-images"
 		}
+	],
+	"routes": [
+		"eat.zhengsanniu.com/*"
 	]
 	/**
 	 * Smart Placement
