@@ -1,6 +1,10 @@
 import { Database } from './db'
+import { createClerkClient } from '@clerk/backend'
 
-type WorkerEnv = Env & { CLERK_SECRET_KEY: string }
+type WorkerEnv = Env & { 
+  CLERK_SECRET_KEY: string
+  VITE_CLERK_PUBLISHABLE_KEY: string 
+}
 
 export default {
   async fetch(request, env) {
@@ -19,33 +23,43 @@ export default {
     }
 
     // Helper: Extract Bearer token
-    const getBearerToken = () => {
+    const getAuthHeaderToken = () => {
       const auth = request.headers.get('Authorization') || ''
-      const [, token] = auth.match(/^Bearer\s+(.+)$/i) || []
-      return token || null
+      // Handle both "Bearer token" and "Bearer Bearer token" cases
+      const [, bearer] = auth.match(/^Bearer\s+(?:Bearer\s+)?(.+)$/i) || []
+      return bearer || null
     }
 
-    // Helper: Verify token with Clerk (server-side)
-    const verifyClerkToken = async (): Promise<{ userId: string } | null> => {
-      const token = getBearerToken()
-      if (!token) return null
-
+    const getSessionCookieToken = () => {
+      const cookie = request.headers.get('Cookie') || ''
+      const match = cookie.split(';').map(p => p.trim()).find(p => p.startsWith('__session='))
+      if (!match) return null
+      const value = match.split('=')[1]
       try {
-        const resp = await fetch('https://api.clerk.com/v1/sessions/verify', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${env.CLERK_SECRET_KEY}`,
-          },
-          body: JSON.stringify({ token }),
-        })
+        return decodeURIComponent(value)
+      } catch {
+        return value
+      }
+    }
 
-        if (!resp.ok) return null
-        const data = await resp.json() as any
-        // A valid response should include a user_id; treat absence as invalid
-        if (!data || !data.user_id) return null
-        return { userId: data.user_id as string }
-      } catch (e) {
+    // Helper: Verify token with Clerk Backend SDK
+    const verifyClerkToken = async (): Promise<{ userId: string } | null> => {
+      const clerkClient = createClerkClient({ 
+        secretKey: env.CLERK_SECRET_KEY,
+        publishableKey: env.VITE_CLERK_PUBLISHABLE_KEY 
+      })
+      
+      try {
+        const result = await clerkClient.authenticateRequest(request)
+        
+        if (result.isAuthenticated) {
+          const authData = result.toAuth()
+          return authData.userId ? { userId: authData.userId } : null
+        }
+        
+        return null
+      } catch (error) {
+        console.warn('Clerk authentication failed:', error)
         return null
       }
     }

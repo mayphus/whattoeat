@@ -29,7 +29,10 @@
 	],
 	"routes": [
 		"eat.zhengsanniu.com/*"
-	]
+	],
+	"vars": {
+		"VITE_CLERK_PUBLISHABLE_KEY": "pk_test_dW5iaWFzZWQtY2hpY2tlbi05LmNsZXJrLmFjY291bnRzLmRldiQ"
+	}
 	/**
 	 * Smart Placement
 	 * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement

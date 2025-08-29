@@ -27,6 +27,7 @@ async function request<T>(
 
   const response = await fetch(`${API_BASE}${endpoint}`, {
     headers,
+    credentials: 'include',
     ...options,
   })
 
@@ -109,6 +110,7 @@ export const imageApi = {
       method: "POST",
       body: formData,
       headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      credentials: 'include',
     })
 
     if (!response.ok) {
