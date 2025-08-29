@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import type { DragEvent, ChangeEvent } from 'react'
 import { Upload, X, Camera } from 'lucide-react'
 import { imageApi } from '../services/api'
+import { useAuth } from '@clerk/clerk-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -18,6 +19,7 @@ export default function ImageUpload({ onImageUploaded, currentImageUrl, classNam
   const [isUploading, setIsUploading] = useState(false)
   const [uploadError, setUploadError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const { getToken } = useAuth()
 
   const handleDragEnter = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault()
@@ -77,7 +79,8 @@ export default function ImageUpload({ onImageUploaded, currentImageUrl, classNam
     // Upload the image
     setIsUploading(true)
     try {
-      const { imageUrl } = await imageApi.upload(file)
+      const token = await getToken()
+      const { imageUrl } = await imageApi.upload(file, token)
       onImageUploaded(imageUrl)
     } catch (error) {
       setUploadError(error instanceof Error ? error.message : 'Upload failed')

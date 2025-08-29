@@ -11,9 +11,11 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { useAuth } from '@clerk/clerk-react'
 
 export default function NewMealPage() {
   const navigate = useNavigate()
+  const { getToken } = useAuth()
   const [recipes, setRecipes] = useState<Recipe[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -72,7 +74,8 @@ export default function NewMealPage() {
         notes: formData.notes || undefined,
       }
       
-      await mealApi.create(meal)
+      const token = await getToken()
+      await mealApi.create(meal, token)
       navigate('/meals')
     } catch (err) {
       setError(err instanceof Error ? err.message : '記錄用餐失敗')

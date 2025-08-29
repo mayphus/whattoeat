@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { useAuth } from '@clerk/clerk-react'
 
 export default function RecipeDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -15,6 +16,7 @@ export default function RecipeDetailPage() {
   const [error, setError] = useState<string | null>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  const { getToken } = useAuth()
 
   useEffect(() => {
     if (id) {
@@ -40,7 +42,8 @@ export default function RecipeDetailPage() {
     
     try {
       setIsSaving(true)
-      await recipeApi.update(id, recipe)
+      const token = await getToken()
+      await recipeApi.update(id, recipe, token)
       setIsEditing(false)
       setError(null)
     } catch (err) {

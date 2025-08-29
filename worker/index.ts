@@ -9,11 +9,52 @@ export default {
     const corsHeaders = {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     }
 
     if (request.method === 'OPTIONS') {
       return new Response(null, { headers: corsHeaders })
+    }
+
+    // Helper: Extract Bearer token
+    const getBearerToken = () => {
+      const auth = request.headers.get('Authorization') || ''
+      const [, token] = auth.match(/^Bearer\s+(.+)$/i) || []
+      return token || null
+    }
+
+    // Helper: Verify token with Clerk (server-side)
+    const verifyClerkToken = async (): Promise<{ userId: string } | null> => {
+      const token = getBearerToken()
+      if (!token) return null
+
+      try {
+        const resp = await fetch('https://api.clerk.com/v1/sessions/verify', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${env.CLERK_SECRET_KEY}`,
+          },
+          body: JSON.stringify({ token }),
+        })
+
+        if (!resp.ok) return null
+        const data = await resp.json() as any
+        // A valid response should include a user_id; treat absence as invalid
+        if (!data || !data.user_id) return null
+        return { userId: data.user_id as string }
+      } catch (e) {
+        return null
+      }
+    }
+
+    // Guard: Require auth for write operations (POST/PUT)
+    const requireAuthForWrite = async () => {
+      const verified = await verifyClerkToken()
+      if (!verified) {
+        return Response.json({ success: false, error: 'Unauthorized' }, { status: 401, headers: corsHeaders })
+      }
+      return null
     }
 
     try {
@@ -24,6 +65,8 @@ export default {
       }
 
       if (url.pathname === '/api/recipes' && request.method === 'POST') {
+        const unauth = await requireAuthForWrite()
+        if (unauth) return unauth
         const recipe = await request.json()
         const createdRecipe = await db.createRecipe(recipe as any)
         return Response.json({ success: true, data: createdRecipe }, { headers: corsHeaders })
@@ -39,6 +82,8 @@ export default {
       }
 
       if (url.pathname.startsWith('/api/recipes/') && request.method === 'PUT') {
+        const unauth = await requireAuthForWrite()
+        if (unauth) return unauth
         const id = url.pathname.split('/')[3]
         const updates = await request.json()
         const updatedRecipe = await db.updateRecipe(id, updates as any)
@@ -57,6 +102,8 @@ export default {
       }
 
       if (url.pathname === '/api/meals' && request.method === 'POST') {
+        const unauth = await requireAuthForWrite()
+        if (unauth) return unauth
         const meal = await request.json()
         const createdMeal = await db.createMeal(meal as any)
         return Response.json({ success: true, data: createdMeal }, { headers: corsHeaders })
@@ -81,6 +128,8 @@ export default {
 
       // Image upload endpoint
       if (url.pathname === '/api/upload' && request.method === 'POST') {
+        const unauth = await requireAuthForWrite()
+        if (unauth) return unauth
         const formData = await request.formData()
         const file = formData.get('image') as File
         

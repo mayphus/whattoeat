@@ -114,13 +114,14 @@ export const analyticsApi = {
 }
 
 export const imageApi = {
-  async upload(file: File): Promise<{ imageUrl: string }> {
+  async upload(file: File, token?: string | null): Promise<{ imageUrl: string }> {
     const formData = new FormData()
     formData.append("image", file)
     
     const response = await fetch(`${API_BASE}/upload`, {
       method: "POST",
       body: formData,
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
     })
 
     if (!response.ok) {

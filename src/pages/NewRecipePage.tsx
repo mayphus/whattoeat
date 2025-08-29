@@ -11,11 +11,13 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { useAuth } from '@clerk/clerk-react'
 
 export default function NewRecipePage() {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const { getToken } = useAuth()
   
   const [formData, setFormData] = useState({
     name: '',
@@ -108,7 +110,8 @@ export default function NewRecipePage() {
           .map(ing => ({ ...ing, id: crypto.randomUUID() }))
       }
       
-      await recipeApi.create(recipe)
+      const token = await getToken()
+      await recipeApi.create(recipe, token)
       navigate('/')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create recipe')
