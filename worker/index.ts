@@ -22,25 +22,6 @@ export default {
       return new Response(null, { headers: corsHeaders })
     }
 
-    // Helper: Extract Bearer token
-    const getAuthHeaderToken = () => {
-      const auth = request.headers.get('Authorization') || ''
-      // Handle both "Bearer token" and "Bearer Bearer token" cases
-      const [, bearer] = auth.match(/^Bearer\s+(?:Bearer\s+)?(.+)$/i) || []
-      return bearer || null
-    }
-
-    const getSessionCookieToken = () => {
-      const cookie = request.headers.get('Cookie') || ''
-      const match = cookie.split(';').map(p => p.trim()).find(p => p.startsWith('__session='))
-      if (!match) return null
-      const value = match.split('=')[1]
-      try {
-        return decodeURIComponent(value)
-      } catch {
-        return value
-      }
-    }
 
     // Helper: Verify token with Clerk Backend SDK
     const verifyClerkToken = async (): Promise<{ userId: string } | null> => {
