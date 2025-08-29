@@ -51,6 +51,13 @@ export const recipeApi = {
       body: JSON.stringify(recipe),
     })
   },
+
+  async update(id: string, recipe: Partial<Recipe>): Promise<Recipe> {
+    return request<Recipe>(`/recipes/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(recipe),
+    })
+  },
 }
 
 export const mealApi = {

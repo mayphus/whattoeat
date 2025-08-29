@@ -1,7 +1,10 @@
 import { useState, useRef } from 'react'
 import type { DragEvent, ChangeEvent } from 'react'
+import { Upload, X, Camera } from 'lucide-react'
 import { imageApi } from '../services/api'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 
 interface ImageUploadProps {
   onImageUploaded: (imageUrl: string) => void
@@ -97,7 +100,7 @@ export default function ImageUpload({ onImageUploaded, currentImageUrl, classNam
   }
 
   return (
-    <div className={`image-upload ${className}`}>
+    <div className={className}>
       <input
         ref={fileInputRef}
         type="file"
@@ -108,89 +111,100 @@ export default function ImageUpload({ onImageUploaded, currentImageUrl, classNam
       />
       
       {uploadError && (
-        <div className="upload-error mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-red-600 text-sm font-medium">{uploadError}</p>
-        </div>
+        <Alert variant="destructive" className="mb-4">
+          <AlertDescription>{uploadError}</AlertDescription>
+        </Alert>
       )}
       
       {previewUrl ? (
-        <div className="image-preview">
+        <Card className="overflow-hidden">
           <div className="relative group">
             <img 
               src={previewUrl} 
               alt="Recipe preview" 
-              className="w-full h-32 object-cover rounded-xl"
+              className="w-full h-40 object-cover"
             />
             {isUploading && (
-              <div className="absolute inset-0 bg-black bg-opacity-50 rounded-xl flex items-center justify-center">
-                <div className="text-white text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-2"></div>
-                  <p className="text-sm font-medium">Uploading...</p>
+              <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+                  <p className="text-sm font-medium text-muted-foreground">上傳中...</p>
                 </div>
               </div>
             )}
             {!isUploading && (
-              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200 rounded-xl flex items-center justify-center">
-                <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 space-x-3">
+              <div className="absolute inset-0 bg-background/0 group-hover:bg-background/60 transition-all duration-200 flex items-center justify-center">
+                <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-2">
                   <Button
                     type="button"
                     onClick={handleClick}
                     size="sm"
                     variant="secondary"
                   >
-                    Change
+                    <Camera className="h-4 w-4 mr-1" />
+                    更換
                   </Button>
                   <Button
                     type="button"
                     onClick={removeImage}
                     size="sm"
                     variant="ghost"
-                    className="text-white hover:bg-white/20"
                   >
-                    Remove
+                    <X className="h-4 w-4 mr-1" />
+                    移除
                   </Button>
                 </div>
               </div>
             )}
           </div>
-        </div>
+        </Card>
       ) : (
-        <div
-          className={`upload-area ${isDragging ? 'dragging' : ''} ${isUploading ? 'uploading' : ''}`}
+        <Card 
+          className={`cursor-pointer transition-colors ${
+            isDragging ? 'border-primary bg-primary/5' : 'border-dashed border-2 hover:border-primary/50'
+          } ${isUploading ? 'cursor-not-allowed' : ''}`}
           onDragEnter={!isUploading ? handleDragEnter : undefined}
           onDragLeave={!isUploading ? handleDragLeave : undefined}
           onDragOver={!isUploading ? handleDragOver : undefined}
           onDrop={!isUploading ? handleDrop : undefined}
           onClick={!isUploading ? handleClick : undefined}
         >
-          <div className="upload-content">
+          <CardContent className="flex flex-col items-center justify-center py-8 px-4">
             {isUploading ? (
               <>
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-                <h3 className="upload-title">Uploading your image...</h3>
-                <p className="upload-description">Please wait while we process your photo</p>
+                <h3 className="text-lg font-medium mb-2">上傳中...</h3>
+                <p className="text-muted-foreground text-center">請稍候，正在處理您的照片</p>
               </>
             ) : (
               <>
-                <div className="upload-icon">
-                  📸
+                <div className="mb-4">
+                  {isDragging ? (
+                    <Upload className="h-12 w-12 text-primary" />
+                  ) : (
+                    <Camera className="h-12 w-12 text-muted-foreground" />
+                  )}
                 </div>
-                <h3 className="upload-title">
-                  {isDragging ? 'Drop your image here' : 'Upload recipe photo'}
+                <h3 className="text-lg font-medium mb-2">
+                  {isDragging ? '放下以上傳圖片' : '上傳食譜照片'}
                 </h3>
-                <p className="upload-description">
+                <p className="text-muted-foreground text-center mb-3">
                   {isDragging 
-                    ? 'Release to upload' 
-                    : 'Drag & drop an image, or click to browse'
+                    ? '放開點擊以上傳' 
+                    : '拖放圖片至此處，或點擊選擇檔案'
                   }
                 </p>
-                <div className="upload-specs">
-                  JPG, PNG, WebP • Max 5MB
+                <div className="text-xs text-muted-foreground">
+                  支援 JPG、PNG、WebP 格式 • 最大 5MB
                 </div>
+                <Button type="button" variant="outline" className="mt-4" size="sm">
+                  <Upload className="h-4 w-4 mr-2" />
+                  選擇檔案
+                </Button>
               </>
             )}
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       )}
     </div>
   )

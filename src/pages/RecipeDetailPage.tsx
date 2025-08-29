@@ -14,6 +14,7 @@ export default function RecipeDetailPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isEditing, setIsEditing] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
 
   useEffect(() => {
     if (id) {
@@ -31,6 +32,29 @@ export default function RecipeDetailPage() {
       setError(err instanceof Error ? err.message : 'Failed to load recipe')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleSave = async () => {
+    if (!recipe || !id) return
+    
+    try {
+      setIsSaving(true)
+      await recipeApi.update(id, recipe)
+      setIsEditing(false)
+      setError(null)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '儲存失敗')
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const handleEditToggle = () => {
+    if (isEditing) {
+      handleSave()
+    } else {
+      setIsEditing(true)
     }
   }
 
@@ -108,19 +132,14 @@ export default function RecipeDetailPage() {
             )}
           </div>
           
-          <div className="flex gap-2">
-            <button
-              onClick={() => setIsEditing(!isEditing)}
-              className="btn btn-secondary"
+          <div>
+            <Button
+              onClick={handleEditToggle}
+              variant="secondary"
+              disabled={isSaving}
             >
-              {isEditing ? '完成編輯' : '編輯'}
-            </button>
-            <Link
-              to={`/meals/new?recipeId=${recipe.id}`}
-              className="btn btn-primary"
-            >
-              Log as Meal
-            </Link>
+              {isSaving ? '儲存中...' : isEditing ? '儲存' : '編輯'}
+            </Button>
           </div>
         </div>
 
@@ -128,12 +147,38 @@ export default function RecipeDetailPage() {
           <div className="flex items-center gap-2">
             <Clock className="h-4 w-4" />
             <span className="font-medium">準備:</span>
-            <span>{recipe.prepTime} 分鐘</span>
+            {isEditing ? (
+              <div className="flex items-center gap-1">
+                <Input
+                  type="number"
+                  value={recipe.prepTime}
+                  onChange={(e) => setRecipe(prev => prev ? {...prev, prepTime: parseInt(e.target.value) || 0} : prev)}
+                  className="w-16 h-6 text-sm"
+                  min="0"
+                />
+                <span className="text-xs">分鐘</span>
+              </div>
+            ) : (
+              <span>{recipe.prepTime} 分鐘</span>
+            )}
           </div>
           <div className="flex items-center gap-2">
             <Clock className="h-4 w-4" />
             <span className="font-medium">烹調:</span>
-            <span>{recipe.cookTime} 分鐘</span>
+            {isEditing ? (
+              <div className="flex items-center gap-1">
+                <Input
+                  type="number"
+                  value={recipe.cookTime}
+                  onChange={(e) => setRecipe(prev => prev ? {...prev, cookTime: parseInt(e.target.value) || 0} : prev)}
+                  className="w-16 h-6 text-sm"
+                  min="0"
+                />
+                <span className="text-xs">分鐘</span>
+              </div>
+            ) : (
+              <span>{recipe.cookTime} 分鐘</span>
+            )}
           </div>
           <div className="flex items-center gap-2">
             <Clock className="h-4 w-4" />
@@ -143,18 +188,55 @@ export default function RecipeDetailPage() {
           <div className="flex items-center gap-2">
             <Users className="h-4 w-4" />
             <span className="font-medium">份量:</span>
-            <span>{recipe.servings} 人份</span>
+            {isEditing ? (
+              <div className="flex items-center gap-1">
+                <Input
+                  type="number"
+                  value={recipe.servings}
+                  onChange={(e) => setRecipe(prev => prev ? {...prev, servings: parseInt(e.target.value) || 1} : prev)}
+                  className="w-16 h-6 text-sm"
+                  min="1"
+                />
+                <span className="text-xs">人份</span>
+              </div>
+            ) : (
+              <span>{recipe.servings} 人份</span>
+            )}
           </div>
           <div className="flex items-center gap-2">
-            <span className="font-medium">Difficulty:</span>
-            <span className="capitalize">{recipe.difficulty}</span>
+            <span className="font-medium">難度:</span>
+            {isEditing ? (
+              <select
+                value={recipe.difficulty}
+                onChange={(e) => setRecipe(prev => prev ? {...prev, difficulty: e.target.value as 'easy' | 'medium' | 'hard'} : prev)}
+                className="text-sm border rounded px-2 py-1 bg-background"
+              >
+                <option value="easy">簡單</option>
+                <option value="medium">中等</option>
+                <option value="hard">困難</option>
+              </select>
+            ) : (
+              <span className="capitalize">
+                {recipe.difficulty === 'easy' ? '簡單' : recipe.difficulty === 'medium' ? '中等' : '困難'}
+              </span>
+            )}
           </div>
         </div>
 
         <div className="mb-6">
-          <span className="inline-block bg-muted text-foreground text-sm px-3 py-1 rounded-full">
-            {recipe.category}
-          </span>
+          {isEditing ? (
+            <Input
+              type="text"
+              value={recipe.category}
+              onChange={(e) => setRecipe(prev => prev ? {...prev, category: e.target.value} : prev)}
+              className="max-w-xs"
+              placeholder="食譜類別"
+            />
+          ) : (
+            <span className="inline-block bg-muted text-foreground text-sm px-3 py-1 rounded-full">
+              {recipe.category}
+            </span>
+          )}
         </div>
       </div>
 

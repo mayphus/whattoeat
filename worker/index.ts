@@ -38,6 +38,16 @@ export default {
         return Response.json({ success: true, data: recipe }, { headers: corsHeaders })
       }
 
+      if (url.pathname.startsWith('/api/recipes/') && request.method === 'PUT') {
+        const id = url.pathname.split('/')[3]
+        const updates = await request.json()
+        const updatedRecipe = await db.updateRecipe(id, updates as any)
+        if (!updatedRecipe) {
+          return Response.json({ success: false, error: 'Recipe not found' }, { status: 404, headers: corsHeaders })
+        }
+        return Response.json({ success: true, data: updatedRecipe }, { headers: corsHeaders })
+      }
+
       // Meal endpoints
       if (url.pathname === '/api/meals' && request.method === 'GET') {
         const startDate = url.searchParams.get('startDate') || undefined

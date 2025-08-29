@@ -72,6 +72,60 @@ export class Database {
     return this.mapRowToRecipe(result)
   }
 
+  async updateRecipe(id: string, updates: Partial<Recipe>): Promise<Recipe | null> {
+    const now = new Date().toISOString()
+    
+    // Update recipe
+    const stmt = this.db.prepare(`
+      UPDATE recipes 
+      SET name = ?, description = ?, image_url = ?, prep_time = ?, cook_time = ?, servings = ?, 
+          difficulty = ?, category = ?, instructions = ?, calories = ?, protein = ?, carbs = ?, 
+          fat = ?, fiber = ?, updated_at = ?
+      WHERE id = ?
+    `)
+    
+    const existingRecipe = await this.getRecipeById(id)
+    if (!existingRecipe) return null
+    
+    await stmt.bind(
+      updates.name ?? existingRecipe.name,
+      updates.description ?? existingRecipe.description ?? null,
+      updates.imageUrl ?? existingRecipe.imageUrl ?? null,
+      updates.prepTime ?? existingRecipe.prepTime,
+      updates.cookTime ?? existingRecipe.cookTime,
+      updates.servings ?? existingRecipe.servings,
+      updates.difficulty ?? existingRecipe.difficulty,
+      updates.category ?? existingRecipe.category,
+      JSON.stringify(updates.instructions ?? existingRecipe.instructions),
+      updates.nutrition?.calories ?? existingRecipe.nutrition?.calories ?? null,
+      updates.nutrition?.protein ?? existingRecipe.nutrition?.protein ?? null,
+      updates.nutrition?.carbs ?? existingRecipe.nutrition?.carbs ?? null,
+      updates.nutrition?.fat ?? existingRecipe.nutrition?.fat ?? null,
+      updates.nutrition?.fiber ?? existingRecipe.nutrition?.fiber ?? null,
+      now,
+      id
+    ).run()
+
+    // Update ingredients if provided
+    if (updates.ingredients) {
+      // Delete existing ingredients
+      const deleteStmt = this.db.prepare('DELETE FROM ingredients WHERE recipe_id = ?')
+      await deleteStmt.bind(id).run()
+
+      // Insert new ingredients
+      for (const ingredient of updates.ingredients) {
+        const ingredientId = ingredient.id || crypto.randomUUID()
+        const ingredientStmt = this.db.prepare(`
+          INSERT INTO ingredients (id, recipe_id, name, amount, unit)
+          VALUES (?, ?, ?, ?, ?)
+        `)
+        await ingredientStmt.bind(ingredientId, id, ingredient.name, ingredient.amount, ingredient.unit).run()
+      }
+    }
+
+    return this.getRecipeById(id)
+  }
+
   private async mapRowToRecipe(row: Record<string, unknown>): Promise<Recipe> {
     // Get ingredients
     const ingredientsStmt = this.db.prepare('SELECT * FROM ingredients WHERE recipe_id = ?')
