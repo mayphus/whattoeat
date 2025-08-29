@@ -1,5 +1,7 @@
 import { Database } from './db'
 
+type WorkerEnv = Env & { CLERK_SECRET_KEY: string }
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url)
@@ -203,4 +205,4 @@ export default {
       )
     }
   },
-} satisfies ExportedHandler<Env>;
+} satisfies ExportedHandler<WorkerEnv>;

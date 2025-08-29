@@ -11,31 +11,18 @@ class ApiError extends Error {
   }
 }
 
-// Function to get the Clerk session token
-async function getAuthToken(): Promise<string | null> {
-  // This will be dynamically imported to avoid issues during build
-  try {
-    const { useAuth } = await import('@clerk/clerk-react')
-    // Note: In practice, this should be called within a component/hook context
-    // For now, we'll handle this in the components that make API calls
-    return null
-  } catch {
-    return null
-  }
-}
-
 async function request<T>(
   endpoint: string,
   options: RequestInit = {},
   token?: string | null
 ): Promise<T> {
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-    ...options.headers,
+  // Normalize headers
+  const headers = new Headers(options.headers as HeadersInit)
+  if (!headers.has('Content-Type') && options.body && !(options.body instanceof FormData)) {
+    headers.set('Content-Type', 'application/json')
   }
-
   if (token) {
-    headers.Authorization = `Bearer ${token}`
+    headers.set('Authorization', `Bearer ${token}`)
   }
 
   const response = await fetch(`${API_BASE}${endpoint}`, {
