@@ -7,10 +7,10 @@ export default function WelcomePage() {
     <div className="min-h-screen bg-background">
       <header className="border-b">
         <div className="container max-w-2xl mx-auto h-16 px-4 flex items-center">
-          <div className="text-xl font-semibold">吃啥?</div>
+          <div className="text-xl font-semibold">What to Eat?</div>
           <div className="ml-auto">
             <Button asChild variant="secondary" size="sm">
-              <Link to="/sign-in">登入</Link>
+              <Link to="/sign-in">Sign In</Link>
             </Button>
           </div>
         </div>
@@ -18,28 +18,28 @@ export default function WelcomePage() {
 
       <main className="container max-w-2xl mx-auto px-4 py-16">
         <div className="text-center space-y-6">
-          <h1 className="text-3xl font-bold tracking-tight">管理食譜與用餐，輕鬆又聰明</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Manage Recipes and Meals, Simple and Smart</h1>
           <p className="text-muted-foreground">
-            儲存你的拿手菜、快速記錄每日用餐，並查看飲食統計。開始建立屬於你的美味資料庫。
+            Save your favorite dishes, quickly record daily meals, and view dietary statistics. Start building your personal recipe database.
           </p>
 
-          {/* Single CTA lives in header: 登入 */}
+          {/* Single CTA lives in header: Sign In */}
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-10 text-left">
             <Feature
               icon={<BookOpen className="h-5 w-5" />}
-              title="收藏食譜"
-              text="建立食譜清單、分類管理、快速搜尋。"
+              title="Save Recipes"
+              text="Create recipe lists, organize by category, and search quickly."
             />
             <Feature
               icon={<UtensilsCrossed className="h-5 w-5" />}
-              title="記錄用餐"
-              text="追蹤每日餐點與份量，養成好習慣。"
+              title="Record Meals"
+              text="Track daily meals and portions, develop good habits."
             />
             <Feature
               icon={<ChartNoAxesGantt className="h-5 w-5" />}
-              title="分析洞察"
-              text="查看常做菜色與營養趨勢。"
+              title="Analytics Insights"
+              text="View frequently made dishes and nutrition trends."
             />
           </div>
         </div>

@@ -9,7 +9,7 @@ export default function Layout() {
       <nav className="border-b">
         <div className="container max-w-2xl mx-auto flex h-16 items-center px-4">
           <NavLink to="/" className="text-xl font-semibold" end>
-            吃啥?
+            What to Eat?
           </NavLink>
           
           <div className="ml-auto flex items-center space-x-6">
@@ -20,7 +20,7 @@ export default function Layout() {
               }
               end
             >
-              食譜
+              Recipes
             </NavLink>
             <NavLink 
               to="/meals" 
@@ -28,7 +28,7 @@ export default function Layout() {
                 `text-sm font-medium transition-colors hover:text-foreground/80 ${isActive ? 'text-foreground' : 'text-foreground/60'}`
               }
             >
-              用餐
+              Meals
             </NavLink>
             <NavLink 
               to="/analytics" 
@@ -36,13 +36,13 @@ export default function Layout() {
                 `text-sm font-medium transition-colors hover:text-foreground/80 ${isActive ? 'text-foreground' : 'text-foreground/60'}`
               }
             >
-              統計
+              Analytics
             </NavLink>
             
             {/* User menu */}
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">
-                歡迎, {user?.firstName || user?.username}
+                Welcome, {user?.firstName || user?.username}
               </span>
               <UserButton afterSignOutUrl="/" />
             </div>

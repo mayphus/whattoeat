@@ -52,7 +52,7 @@ export default function AnalyticsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <p className="text-muted-foreground">載入分析資料中...</p>
+        <p className="text-muted-foreground">Loading analytics...</p>
       </div>
     )
   }
@@ -65,7 +65,7 @@ export default function AnalyticsPage() {
           <AlertDescription>{error}</AlertDescription>
         </Alert>
         <Button onClick={loadAnalytics} variant="secondary">
-          重試
+          Retry
         </Button>
       </div>
     )
@@ -74,7 +74,7 @@ export default function AnalyticsPage() {
   if (!analytics) {
     return (
       <div className="flex items-center justify-center py-12">
-        <p className="text-muted-foreground">沒有可用的資料</p>
+        <p className="text-muted-foreground">No data available</p>
       </div>
     )
   }
@@ -83,8 +83,8 @@ export default function AnalyticsPage() {
     <div>
       <div className="flex flex-col space-y-4 mb-8">
         <div>
-          <h1 className="text-2xl font-semibold">分析</h1>
-          <p className="text-muted-foreground">您的飲食習慣洞察</p>
+          <h1 className="text-2xl font-semibold">Analytics</h1>
+          <p className="text-muted-foreground">Your eating habit insights</p>
         </div>
         
         <div className="flex justify-center gap-2">
@@ -93,49 +93,49 @@ export default function AnalyticsPage() {
             variant={timeRange === 'week' ? 'default' : 'secondary'}
             size="sm"
           >
-            過去一週
+            Past Week
           </Button>
           <Button
             onClick={() => setTimeRange('month')}
             variant={timeRange === 'month' ? 'default' : 'secondary'}
             size="sm"
           >
-            過去一月
+            Past Month
           </Button>
           <Button
             onClick={() => setTimeRange('all')}
             variant={timeRange === 'all' ? 'default' : 'secondary'}
             size="sm"
           >
-            全部時間
+            All Time
           </Button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
         <StatCard
-          title="總用餐數"
+          title="Total Meals"
           value={analytics.totalMeals.toString()}
-          subtitle="餐數記錄"
+          subtitle="meal records"
         />
         <StatCard
-          title="最愛食譜"
-          value={analytics.favoriteRecipes[0]?.recipe.name || '無'}
-          subtitle={analytics.favoriteRecipes[0] ? `${analytics.favoriteRecipes[0].count} 次` : ''}
+          title="Favorite Recipe"
+          value={analytics.favoriteRecipes[0]?.recipe.name || 'None'}
+          subtitle={analytics.favoriteRecipes[0] ? `${analytics.favoriteRecipes[0].count} times` : ''}
         />
         <StatCard
-          title="最常用餐類型"
+          title="Most Common Meal Type"
           value={
             Object.entries(analytics.mealsByType)
-              .sort(([,a], [,b]) => b - a)[0]?.[0] || '無'
+              .sort(([,a], [,b]) => b - a)[0]?.[0] || 'None'
           }
           subtitle={
             Object.entries(analytics.mealsByType)
-              .sort(([,a], [,b]) => b - a)[0]?.[1].toString() + ' 餐' || ''
+              .sort(([,a], [,b]) => b - a)[0]?.[1].toString() + ' meals' || ''
           }
         />
         <StatCard
-          title="平均每日卡路里"
+          title="Avg Daily Calories"
           value={
             analytics.nutritionTrends.length > 0
               ? Math.round(
@@ -144,18 +144,18 @@ export default function AnalyticsPage() {
                 ).toString()
               : '0'
           }
-          subtitle="每日"
+          subtitle="daily"
         />
       </div>
 
       <div className="grid grid-cols-1 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>最常製作的食譜</CardTitle>
+            <CardTitle>Most Frequently Made Recipes</CardTitle>
           </CardHeader>
           <CardContent>
             {analytics.favoriteRecipes.length === 0 ? (
-              <p className="text-muted-foreground text-center py-8">沒有食譜資料</p>
+              <p className="text-muted-foreground text-center py-8">No recipe data</p>
             ) : (
               <div className="space-y-3">
                 {analytics.favoriteRecipes.slice(0, 5).map((item, index) => (
@@ -171,7 +171,7 @@ export default function AnalyticsPage() {
                     </div>
                     <div className="text-right">
                       <p className="font-medium">{item.count}</p>
-                      <p className="text-xs text-muted-foreground">次</p>
+                      <p className="text-xs text-muted-foreground">times</p>
                     </div>
                   </div>
                 ))}
@@ -182,11 +182,11 @@ export default function AnalyticsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>用餐類型分布</CardTitle>
+            <CardTitle>Meal Type Distribution</CardTitle>
           </CardHeader>
           <CardContent>
             {Object.keys(analytics.mealsByType).length === 0 ? (
-              <p className="text-muted-foreground text-center py-8">沒有用餐資料</p>
+              <p className="text-muted-foreground text-center py-8">No meal data</p>
             ) : (
               <div className="space-y-4">
                 {Object.entries(analytics.mealsByType)
@@ -214,11 +214,11 @@ export default function AnalyticsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>最常使用的食材</CardTitle>
+            <CardTitle>Most Used Ingredients</CardTitle>
           </CardHeader>
           <CardContent>
             {analytics.topIngredients.length === 0 ? (
-              <p className="text-muted-foreground text-center py-8">沒有食材資料</p>
+              <p className="text-muted-foreground text-center py-8">No ingredient data</p>
             ) : (
               <div className="space-y-3">
                 {analytics.topIngredients.slice(0, 8).map((item, index) => (
@@ -241,18 +241,18 @@ export default function AnalyticsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>營養概覽</CardTitle>
+            <CardTitle>Nutrition Overview</CardTitle>
           </CardHeader>
           <CardContent>
             {analytics.nutritionTrends.length === 0 ? (
-              <p className="text-muted-foreground text-center py-8">沒有營養資料</p>
+              <p className="text-muted-foreground text-center py-8">No nutrition data</p>
             ) : (
               <div className="space-y-4">
                 {[
-                  { label: '卡路里', key: 'calories' as const, unit: '' },
-                  { label: '蛋白質', key: 'protein' as const, unit: 'g' },
-                  { label: '碳水化合物', key: 'carbs' as const, unit: 'g' },
-                  { label: '脂肪', key: 'fat' as const, unit: 'g' },
+                  { label: 'Calories', key: 'calories' as const, unit: '' },
+                  { label: 'Protein', key: 'protein' as const, unit: 'g' },
+                  { label: 'Carbs', key: 'carbs' as const, unit: 'g' },
+                  { label: 'Fat', key: 'fat' as const, unit: 'g' },
                 ].map(({ label, key, unit }) => {
                   const avg = analytics.nutritionTrends.reduce((sum, day) => sum + day[key], 0) / analytics.nutritionTrends.length
                   const max = Math.max(...analytics.nutritionTrends.map(day => day[key]))
@@ -262,7 +262,7 @@ export default function AnalyticsPage() {
                       <div className="flex items-center justify-between mb-1">
                         <span className="text-sm font-medium">{label}</span>
                         <span className="text-sm text-muted-foreground">
-                          {Math.round(avg)}{unit} 平均
+                          {Math.round(avg)}{unit} avg
                         </span>
                       </div>
                       <div className="w-full bg-muted rounded-full h-2">

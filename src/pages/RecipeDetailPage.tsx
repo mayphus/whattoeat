@@ -48,7 +48,7 @@ export default function RecipeDetailPage() {
       setIsEditing(false)
       setError(null)
     } catch (err) {
-      setError(err instanceof Error ? err.message : '儲存失敗')
+      setError(err instanceof Error ? err.message : 'Save failed')
     } finally {
       setIsSaving(false)
     }
@@ -65,7 +65,7 @@ export default function RecipeDetailPage() {
   if (loading) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground">載入食譜中...</p>
+        <p className="text-muted-foreground">Loading recipe...</p>
       </div>
     )
   }
@@ -96,7 +96,7 @@ export default function RecipeDetailPage() {
         <Button variant="ghost" size="sm" asChild>
           <Link to="/" className="text-muted-foreground hover:text-foreground">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            返回食譜列表
+            Back to Recipes
           </Link>
         </Button>
       </div>
@@ -142,7 +142,7 @@ export default function RecipeDetailPage() {
               variant="secondary"
               disabled={isSaving}
             >
-              {isSaving ? '儲存中...' : isEditing ? '儲存' : '編輯'}
+              {isSaving ? 'Saving...' : isEditing ? 'Save' : 'Edit'}
             </Button>
           </div>
         </div>
@@ -150,7 +150,7 @@ export default function RecipeDetailPage() {
         <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground mb-6">
           <div className="flex items-center gap-2">
             <Clock className="h-4 w-4" />
-            <span className="font-medium">準備:</span>
+            <span className="font-medium">Prep:</span>
             {isEditing ? (
               <div className="flex items-center gap-1">
                 <Input
@@ -160,15 +160,15 @@ export default function RecipeDetailPage() {
                   className="w-16 h-6 text-sm"
                   min="0"
                 />
-                <span className="text-xs">分鐘</span>
+                <span className="text-xs">min</span>
               </div>
             ) : (
-              <span>{recipe.prepTime} 分鐘</span>
+              <span>{recipe.prepTime} min</span>
             )}
           </div>
           <div className="flex items-center gap-2">
             <Clock className="h-4 w-4" />
-            <span className="font-medium">烹調:</span>
+            <span className="font-medium">Cook:</span>
             {isEditing ? (
               <div className="flex items-center gap-1">
                 <Input
@@ -178,20 +178,20 @@ export default function RecipeDetailPage() {
                   className="w-16 h-6 text-sm"
                   min="0"
                 />
-                <span className="text-xs">分鐘</span>
+                <span className="text-xs">min</span>
               </div>
             ) : (
-              <span>{recipe.cookTime} 分鐘</span>
+              <span>{recipe.cookTime} min</span>
             )}
           </div>
           <div className="flex items-center gap-2">
             <Clock className="h-4 w-4" />
-            <span className="font-medium">總時間:</span>
-            <span>{totalTime} 分鐘</span>
+            <span className="font-medium">Total:</span>
+            <span>{totalTime} min</span>
           </div>
           <div className="flex items-center gap-2">
             <Users className="h-4 w-4" />
-            <span className="font-medium">份量:</span>
+            <span className="font-medium">Servings:</span>
             {isEditing ? (
               <div className="flex items-center gap-1">
                 <Input
@@ -201,27 +201,27 @@ export default function RecipeDetailPage() {
                   className="w-16 h-6 text-sm"
                   min="1"
                 />
-                <span className="text-xs">人份</span>
+                <span className="text-xs">servings</span>
               </div>
             ) : (
-              <span>{recipe.servings} 人份</span>
+              <span>{recipe.servings} servings</span>
             )}
           </div>
           <div className="flex items-center gap-2">
-            <span className="font-medium">難度:</span>
+            <span className="font-medium">Difficulty:</span>
             {isEditing ? (
               <select
                 value={recipe.difficulty}
                 onChange={(e) => setRecipe(prev => prev ? {...prev, difficulty: e.target.value as 'easy' | 'medium' | 'hard'} : prev)}
                 className="text-sm border rounded px-2 py-1 bg-background"
               >
-                <option value="easy">簡單</option>
-                <option value="medium">中等</option>
-                <option value="hard">困難</option>
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
               </select>
             ) : (
               <span className="capitalize">
-                {recipe.difficulty === 'easy' ? '簡單' : recipe.difficulty === 'medium' ? '中等' : '困難'}
+                {recipe.difficulty === 'easy' ? 'Easy' : recipe.difficulty === 'medium' ? 'Medium' : 'Hard'}
               </span>
             )}
           </div>
@@ -234,7 +234,7 @@ export default function RecipeDetailPage() {
               value={recipe.category}
               onChange={(e) => setRecipe(prev => prev ? {...prev, category: e.target.value} : prev)}
               className="max-w-xs"
-              placeholder="食譜類別"
+              placeholder="Recipe category"
             />
           ) : (
             <span className="inline-block bg-muted text-foreground text-sm px-3 py-1 rounded-full">
@@ -248,7 +248,7 @@ export default function RecipeDetailPage() {
         <div>
           {/* Ingredients */}
           <div className="mb-8">
-            <h2 className="text-xl font-semibold mb-4">食材</h2>
+            <h2 className="text-xl font-semibold mb-4">Ingredients</h2>
             <Card>
               <CardContent className="p-6">
                 <ul className="space-y-3">
@@ -306,7 +306,7 @@ export default function RecipeDetailPage() {
 
           {/* Instructions */}
           <div className="mb-8">
-            <h2 className="text-xl font-semibold mb-4">烹調步驟</h2>
+            <h2 className="text-xl font-semibold mb-4">Instructions</h2>
             <div className="space-y-4">
               {recipe.instructions.map((instruction, index) => (
                 <Card key={index}>
@@ -380,20 +380,20 @@ export default function RecipeDetailPage() {
           {/* Recipe Info */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">食譜資訊</CardTitle>
+              <CardTitle className="text-lg">Recipe Info</CardTitle>
             </CardHeader>
             <CardContent>
             <div className="space-y-3 text-sm">
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">建立日期</span>
+                <span className="text-muted-foreground">Created</span>
                 <span>{new Date(recipe.createdAt).toLocaleDateString()}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">最後更新</span>
+                <span className="text-muted-foreground">Updated</span>
                 <span>{new Date(recipe.updatedAt).toLocaleDateString()}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">食譜 ID</span>
+                <span className="text-muted-foreground">Recipe ID</span>
                 <span className="font-mono text-xs">{recipe.id}</span>
               </div>
               </div>

@@ -131,7 +131,7 @@ export default function ImageUpload({ onImageUploaded, currentImageUrl, classNam
               <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
                 <div className="text-center">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
-                  <p className="text-sm font-medium text-muted-foreground">上傳中...</p>
+                  <p className="text-sm font-medium text-muted-foreground">Uploading...</p>
                 </div>
               </div>
             )}
@@ -145,7 +145,7 @@ export default function ImageUpload({ onImageUploaded, currentImageUrl, classNam
                     variant="secondary"
                   >
                     <Camera className="h-4 w-4 mr-1" />
-                    更換
+                    Replace
                   </Button>
                   <Button
                     type="button"
@@ -154,7 +154,7 @@ export default function ImageUpload({ onImageUploaded, currentImageUrl, classNam
                     variant="ghost"
                   >
                     <X className="h-4 w-4 mr-1" />
-                    移除
+                    Remove
                   </Button>
                 </div>
               </div>
@@ -176,8 +176,8 @@ export default function ImageUpload({ onImageUploaded, currentImageUrl, classNam
             {isUploading ? (
               <>
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-                <h3 className="text-lg font-medium mb-2">上傳中...</h3>
-                <p className="text-muted-foreground text-center">請稍候，正在處理您的照片</p>
+                <h3 className="text-lg font-medium mb-2">Uploading...</h3>
+                <p className="text-muted-foreground text-center">Please wait, processing your image</p>
               </>
             ) : (
               <>
@@ -189,20 +189,20 @@ export default function ImageUpload({ onImageUploaded, currentImageUrl, classNam
                   )}
                 </div>
                 <h3 className="text-lg font-medium mb-2">
-                  {isDragging ? '放下以上傳圖片' : '上傳食譜照片'}
+                  {isDragging ? 'Drop to upload image' : 'Upload recipe photo'}
                 </h3>
                 <p className="text-muted-foreground text-center mb-3">
                   {isDragging 
-                    ? '放開點擊以上傳' 
-                    : '拖放圖片至此處，或點擊選擇檔案'
+                    ? 'Release to upload' 
+                    : 'Drag and drop images here, or click to select files'
                   }
                 </p>
                 <div className="text-xs text-muted-foreground">
-                  支援 JPG、PNG、WebP 格式 • 最大 5MB
+                  Supports JPG, PNG, WebP formats • Max 5MB
                 </div>
                 <Button type="button" variant="outline" className="mt-4" size="sm">
                   <Upload className="h-4 w-4 mr-2" />
-                  選擇檔案
+                  Choose File
                 </Button>
               </>
             )}

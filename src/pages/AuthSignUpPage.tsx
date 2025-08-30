@@ -6,7 +6,7 @@ export default function AuthSignUpPage() {
     <div className="min-h-screen grid place-items-center p-4 bg-background">
       <div className="w-full max-w-sm">
         <div className="text-center mb-6">
-          <Link to="/" className="inline-block text-2xl font-semibold">吃啥?</Link>
+          <Link to="/" className="inline-block text-2xl font-semibold">What to Eat?</Link>
         </div>
         <SignUp
           routing="path"

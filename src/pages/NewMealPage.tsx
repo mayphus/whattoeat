@@ -53,12 +53,12 @@ export default function NewMealPage() {
     e.preventDefault()
     
     if (!useCustomFood && !formData.recipeId) {
-      setError('請選擇食譜或輸入自定義食物')
+      setError('Please select a recipe or enter custom food')
       return
     }
 
     if (useCustomFood && !formData.customFoodName.trim()) {
-      setError('請輸入食物名稱')
+      setError('Please enter food name')
       return
     }
 
@@ -79,7 +79,7 @@ export default function NewMealPage() {
       await mealApi.create(meal, token)
       navigate('/meals')
     } catch (err) {
-      setError(err instanceof Error ? err.message : '記錄用餐失敗')
+      setError(err instanceof Error ? err.message : 'Failed to record meal')
     } finally {
       setLoading(false)
     }
@@ -88,7 +88,7 @@ export default function NewMealPage() {
   return (
     <div className="max-w-lg mx-auto">
       <div className="mb-8">
-        <h1 className="text-2xl font-semibold">記錄用餐</h1>
+        <h1 className="text-2xl font-semibold">Record Meal</h1>
       </div>
 
       {error && (
@@ -103,7 +103,7 @@ export default function NewMealPage() {
           <CardContent className="p-6">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="date">日期</Label>
+                <Label htmlFor="date">Date</Label>
                 <Input
                   type="date"
                   id="date"
@@ -114,16 +114,16 @@ export default function NewMealPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="mealType">用餐類型</Label>
+                <Label htmlFor="mealType">Meal Type</Label>
                 <Select value={formData.mealType} onValueChange={(value) => handleInputChange('mealType', value)}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="breakfast">早餐</SelectItem>
-                    <SelectItem value="lunch">午餐</SelectItem>
-                    <SelectItem value="dinner">晚餐</SelectItem>
-                    <SelectItem value="snack">點心</SelectItem>
+                    <SelectItem value="breakfast">Breakfast</SelectItem>
+                    <SelectItem value="lunch">Lunch</SelectItem>
+                    <SelectItem value="dinner">Dinner</SelectItem>
+                    <SelectItem value="snack">Snack</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -141,7 +141,7 @@ export default function NewMealPage() {
                   checked={!useCustomFood}
                   onChange={() => setUseCustomFood(false)}
                 />
-                <span>來自食譜</span>
+                <span>From Recipe</span>
               </Label>
               <Label className="flex items-center space-x-2">
                 <input
@@ -150,28 +150,28 @@ export default function NewMealPage() {
                   checked={useCustomFood}
                   onChange={() => setUseCustomFood(true)}
                 />
-                <span>自定義食物</span>
+                <span>Custom Food</span>
               </Label>
             </div>
 
             {useCustomFood ? (
               <div className="space-y-2">
-                <Label htmlFor="customFoodName">食物名稱</Label>
+                <Label htmlFor="customFoodName">Food Name</Label>
                 <Input
                   type="text"
                   id="customFoodName"
                   value={formData.customFoodName}
                   onChange={(e) => handleInputChange('customFoodName', e.target.value)}
-                  placeholder="例如：蘋果、三明治等"
+                  placeholder="e.g. Apple, Sandwich, etc."
                   required={useCustomFood}
                 />
               </div>
             ) : (
               <div className="space-y-2">
-                <Label htmlFor="recipeId">食譜</Label>
+                <Label htmlFor="recipeId">Recipe</Label>
                 <Select value={formData.recipeId} onValueChange={(value) => handleInputChange('recipeId', value)}>
                   <SelectTrigger>
-                    <SelectValue placeholder="選擇食譜..." />
+                    <SelectValue placeholder="Choose recipe..." />
                   </SelectTrigger>
                   <SelectContent>
                     {recipes.map((recipe) => (
@@ -184,7 +184,7 @@ export default function NewMealPage() {
                 
                 {recipes.length === 0 && (
                   <p className="text-sm text-muted-foreground mt-2">
-                    沒有可用的食譜。 <Link to="/recipes/new" className="text-primary hover:underline">先創建一個</Link>。
+                    No recipes available. <Link to="/recipes/new" className="text-primary hover:underline">Create one first</Link>.
                   </p>
                 )}
               </div>
@@ -195,7 +195,7 @@ export default function NewMealPage() {
         {!useCustomFood && (
           <Card>
             <CardContent className="p-6 space-y-2">
-              <Label htmlFor="portion">份量大小</Label>
+              <Label htmlFor="portion">Portion Size</Label>
               <Input
                 type="number"
                 id="portion"
@@ -205,7 +205,7 @@ export default function NewMealPage() {
                 onChange={(e) => handleInputChange('portion', parseFloat(e.target.value) || 1)}
               />
               <p className="text-sm text-muted-foreground">
-                1.0 = 整份食譜，0.5 = 半份，以此類推。
+                1.0 = full recipe, 0.5 = half portion, and so on.
               </p>
             </CardContent>
           </Card>
@@ -213,23 +213,23 @@ export default function NewMealPage() {
 
         <Card>
           <CardContent className="p-6 space-y-2">
-            <Label htmlFor="notes">備註 (可選)</Label>
+            <Label htmlFor="notes">Notes (Optional)</Label>
             <Textarea
               id="notes"
               rows={3}
               value={formData.notes}
               onChange={(e) => handleInputChange('notes', e.target.value)}
-              placeholder="關於這餐的任何額外備註..."
+              placeholder="Any additional notes about this meal..."
             />
           </CardContent>
         </Card>
 
         <div className="flex gap-4">
           <Button type="submit" disabled={loading}>
-            {loading ? '記錄中...' : '記錄用餐'}
+            {loading ? 'Recording...' : 'Record Meal'}
           </Button>
           <Button type="button" variant="secondary" onClick={() => navigate('/meals')}>
-            取消
+            Cancel
           </Button>
         </div>
       </form>

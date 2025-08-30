@@ -27,7 +27,7 @@ export default function MealsPage() {
       setMeals(data)
       setError(null)
     } catch (err) {
-      setError(err instanceof Error ? err.message : '載入用餐記錄失敗')
+      setError(err instanceof Error ? err.message : 'Failed to load meal records')
     } finally {
       setLoading(false)
     }
@@ -49,7 +49,7 @@ export default function MealsPage() {
     <div>
       {loading && (
         <div className="flex items-center justify-center py-12">
-          <p className="text-muted-foreground">載入用餐記錄中...</p>
+          <p className="text-muted-foreground">Loading meal records...</p>
         </div>
       )}
 
@@ -60,7 +60,7 @@ export default function MealsPage() {
             <AlertDescription>{error}</AlertDescription>
           </Alert>
           <Button onClick={loadMeals} variant="secondary">
-            重試
+            Retry
           </Button>
         </div>
       )}
@@ -80,7 +80,7 @@ export default function MealsPage() {
               <div className="min-h-[50vh] flex items-center justify-center">
                 <Button asChild size="lg">
                   <Link to="/meals/new">
-                    記錄用餐
+                    Record Meal
                   </Link>
                 </Button>
               </div>
@@ -88,7 +88,7 @@ export default function MealsPage() {
           ) : (
             <>
               <div className="flex flex-col space-y-4 mb-8">
-                <h1 className="text-2xl font-semibold">用餐記錄</h1>
+                <h1 className="text-2xl font-semibold">Meal Records</h1>
                 <div className="flex justify-center items-center gap-4">
                   <Input
                     type="date"
@@ -98,7 +98,7 @@ export default function MealsPage() {
                   />
                   <Button asChild>
                     <Link to="/meals/new">
-                      記錄用餐
+                      Record Meal
                     </Link>
                   </Button>
                 </div>
@@ -134,14 +134,14 @@ function MealTypeSection({ mealType, meals }: MealTypeSectionProps) {
   return (
     <div>
       <h3 className="text-lg font-medium capitalize mb-4">
-        {mealType === 'breakfast' ? '早餐' : mealType === 'lunch' ? '午餐' : mealType === 'dinner' ? '晚餐' : '點心'}
+        {mealType === 'breakfast' ? 'Breakfast' : mealType === 'lunch' ? 'Lunch' : mealType === 'dinner' ? 'Dinner' : 'Snack'}
       </h3>
       
       {meals.length === 0 ? (
         <Card>
           <CardContent className="p-6">
             <p className="text-muted-foreground text-center">
-              尚無{mealType === 'breakfast' ? '早餐' : mealType === 'lunch' ? '午餐' : mealType === 'dinner' ? '晚餐' : '點心'}記錄
+              No {mealType === 'breakfast' ? 'breakfast' : mealType === 'lunch' ? 'lunch' : mealType === 'dinner' ? 'dinner' : 'snack'} records yet
             </p>
           </CardContent>
         </Card>
@@ -176,7 +176,7 @@ function MealCard({ meal }: MealCardProps) {
                 </Link>
                 {meal.portion !== 1 && (
                   <span className="text-muted-foreground ml-2">
-                    ({meal.portion}x 份量)
+                    ({meal.portion}x portion)
                   </span>
                 )}
               </div>
@@ -192,11 +192,11 @@ function MealCard({ meal }: MealCardProps) {
               <div className="mt-3 flex items-center gap-4 text-sm text-muted-foreground">
                 <div className="flex items-center gap-1">
                   <Clock className="h-3 w-3" />
-                  {meal.recipe.prepTime + meal.recipe.cookTime} 分鐘
+                  {meal.recipe.prepTime + meal.recipe.cookTime} min
                 </div>
                 <span className="capitalize">{meal.recipe.difficulty}</span>
                 {meal.recipe.nutrition?.calories && (
-                  <span>{Math.round(meal.recipe.nutrition.calories * meal.portion)} 卡</span>
+                  <span>{Math.round(meal.recipe.nutrition.calories * meal.portion)} cal</span>
                 )}
               </div>
             )}

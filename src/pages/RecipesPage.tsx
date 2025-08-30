@@ -25,7 +25,7 @@ export default function RecipesPage() {
       setRecipes(data)
       setError(null)
     } catch (err) {
-      setError(err instanceof Error ? err.message : '載入食譜失敗')
+      setError(err instanceof Error ? err.message : 'Failed to load recipes')
     } finally {
       setLoading(false)
     }
@@ -34,7 +34,7 @@ export default function RecipesPage() {
   if (loading) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground">載入食譜中...</p>
+        <p className="text-muted-foreground">Loading recipes...</p>
       </div>
     )
   }
@@ -47,7 +47,7 @@ export default function RecipesPage() {
           onClick={loadRecipes}
           variant="secondary"
         >
-          重試
+          Retry
         </Button>
       </div>
     )
@@ -57,10 +57,10 @@ export default function RecipesPage() {
     <div>
       {recipes.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 px-4">
-          <p className="text-muted-foreground mb-4">還沒有食譜</p>
+          <p className="text-muted-foreground mb-4">No recipes yet</p>
           <Button asChild>
             <Link to="/recipes/new">
-              新增食譜
+              Add Recipe
             </Link>
           </Button>
         </div>
@@ -69,7 +69,7 @@ export default function RecipesPage() {
           <div className="flex justify-center mb-8">
             <Button asChild>
               <Link to="/recipes/new">
-                新增食譜
+                Add Recipe
               </Link>
             </Button>
           </div>
@@ -115,12 +115,12 @@ function RecipeCard({ recipe }: RecipeCardProps) {
             {totalTime > 0 && (
               <div className="flex items-center gap-1">
                 <Clock className="h-3 w-3" />
-                {totalTime}分鐘
+                {totalTime} min
               </div>
             )}
             <div className="flex items-center gap-1">
               <Users className="h-3 w-3" />
-              {recipe.servings}人份
+              {recipe.servings} servings
             </div>
           </div>
         </CardContent>
