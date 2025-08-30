@@ -138,33 +138,6 @@ export default function RecipeDetailPage() {
         </div>
 
       </div>
-
-      <div className="space-y-8">
-        <div>
-          {/* Recipe Info */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Recipe Info</CardTitle>
-            </CardHeader>
-            <CardContent>
-            <div className="space-y-3 text-sm">
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Created</span>
-                <span>{new Date(recipe.createdAt).toLocaleDateString()}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Updated</span>
-                <span>{new Date(recipe.updatedAt).toLocaleDateString()}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Recipe ID</span>
-                <span className="font-mono text-xs">{recipe.id}</span>
-              </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
     </div>
   )
 }
