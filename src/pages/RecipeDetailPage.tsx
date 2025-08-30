@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { Clock, Users, ArrowLeft } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import type { Recipe } from '../types'
 import { recipeApi } from '../services/api'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { useAuth } from '@clerk/clerk-react'
 
 export default function RecipeDetailPage() {
@@ -81,14 +80,6 @@ export default function RecipeDetailPage() {
     )
   }
 
-  const totalTime = recipe.prepTime + recipe.cookTime
-  const hasNutrition = recipe.nutrition && (
-    recipe.nutrition.calories ||
-    recipe.nutrition.protein ||
-    recipe.nutrition.carbs ||
-    recipe.nutrition.fat ||
-    recipe.nutrition.fiber
-  )
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -124,11 +115,10 @@ export default function RecipeDetailPage() {
             )}
             {recipe.description && (
               isEditing ? (
-                <Textarea
+                <Input
                   value={recipe.description}
                   onChange={(e) => setRecipe(prev => prev ? {...prev, description: e.target.value} : prev)}
-                  className="text-muted-foreground text-lg border-0 border-b rounded-none px-0 focus:border-primary resize-none"
-                  rows={2}
+                  className="text-muted-foreground text-lg border-0 border-b rounded-none px-0 focus:border-primary"
                 />
               ) : (
                 <p className="text-muted-foreground text-lg">{recipe.description}</p>
@@ -147,236 +137,10 @@ export default function RecipeDetailPage() {
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground mb-6">
-          <div className="flex items-center gap-2">
-            <Clock className="h-4 w-4" />
-            <span className="font-medium">Prep:</span>
-            {isEditing ? (
-              <div className="flex items-center gap-1">
-                <Input
-                  type="number"
-                  value={recipe.prepTime}
-                  onChange={(e) => setRecipe(prev => prev ? {...prev, prepTime: parseInt(e.target.value) || 0} : prev)}
-                  className="w-16 h-6 text-sm"
-                  min="0"
-                />
-                <span className="text-xs">min</span>
-              </div>
-            ) : (
-              <span>{recipe.prepTime} min</span>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            <Clock className="h-4 w-4" />
-            <span className="font-medium">Cook:</span>
-            {isEditing ? (
-              <div className="flex items-center gap-1">
-                <Input
-                  type="number"
-                  value={recipe.cookTime}
-                  onChange={(e) => setRecipe(prev => prev ? {...prev, cookTime: parseInt(e.target.value) || 0} : prev)}
-                  className="w-16 h-6 text-sm"
-                  min="0"
-                />
-                <span className="text-xs">min</span>
-              </div>
-            ) : (
-              <span>{recipe.cookTime} min</span>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            <Clock className="h-4 w-4" />
-            <span className="font-medium">Total:</span>
-            <span>{totalTime} min</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Users className="h-4 w-4" />
-            <span className="font-medium">Servings:</span>
-            {isEditing ? (
-              <div className="flex items-center gap-1">
-                <Input
-                  type="number"
-                  value={recipe.servings}
-                  onChange={(e) => setRecipe(prev => prev ? {...prev, servings: parseInt(e.target.value) || 1} : prev)}
-                  className="w-16 h-6 text-sm"
-                  min="1"
-                />
-                <span className="text-xs">servings</span>
-              </div>
-            ) : (
-              <span>{recipe.servings} servings</span>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="font-medium">Difficulty:</span>
-            {isEditing ? (
-              <select
-                value={recipe.difficulty}
-                onChange={(e) => setRecipe(prev => prev ? {...prev, difficulty: e.target.value as 'easy' | 'medium' | 'hard'} : prev)}
-                className="text-sm border rounded px-2 py-1 bg-background"
-              >
-                <option value="easy">Easy</option>
-                <option value="medium">Medium</option>
-                <option value="hard">Hard</option>
-              </select>
-            ) : (
-              <span className="capitalize">
-                {recipe.difficulty === 'easy' ? 'Easy' : recipe.difficulty === 'medium' ? 'Medium' : 'Hard'}
-              </span>
-            )}
-          </div>
-        </div>
-
-        <div className="mb-6">
-          {isEditing ? (
-            <Input
-              type="text"
-              value={recipe.category}
-              onChange={(e) => setRecipe(prev => prev ? {...prev, category: e.target.value} : prev)}
-              className="max-w-xs"
-              placeholder="Recipe category"
-            />
-          ) : (
-            <span className="inline-block bg-muted text-foreground text-sm px-3 py-1 rounded-full">
-              {recipe.category}
-            </span>
-          )}
-        </div>
       </div>
 
       <div className="space-y-8">
         <div>
-          {/* Ingredients */}
-          <div className="mb-8">
-            <h2 className="text-xl font-semibold mb-4">Ingredients</h2>
-            <Card>
-              <CardContent className="p-6">
-                <ul className="space-y-3">
-                {recipe.ingredients.map((ingredient, index) => (
-                  <li key={ingredient.id} className="flex items-center justify-between">
-                    {isEditing ? (
-                      <>
-                        <Input 
-                          type="text"
-                          value={ingredient.name}
-                          onChange={(e) => {
-                            const newIngredients = [...recipe.ingredients]
-                            newIngredients[index] = {...ingredient, name: e.target.value}
-                            setRecipe(prev => prev ? {...prev, ingredients: newIngredients} : prev)
-                          }}
-                          className="font-medium border-0 border-b rounded-none px-0 focus:border-primary flex-1 mr-4"
-                        />
-                        <div className="flex items-center gap-2">
-                          <Input 
-                            type="number"
-                            value={ingredient.amount}
-                            onChange={(e) => {
-                              const newIngredients = [...recipe.ingredients]
-                              newIngredients[index] = {...ingredient, amount: parseFloat(e.target.value) || 0}
-                              setRecipe(prev => prev ? {...prev, ingredients: newIngredients} : prev)
-                            }}
-                            className="w-16 border-0 border-b rounded-none px-0 focus:border-primary text-center"
-                          />
-                          <Input 
-                            type="text"
-                            value={ingredient.unit}
-                            onChange={(e) => {
-                              const newIngredients = [...recipe.ingredients]
-                              newIngredients[index] = {...ingredient, unit: e.target.value}
-                              setRecipe(prev => prev ? {...prev, ingredients: newIngredients} : prev)
-                            }}
-                            className="w-16 border-0 border-b rounded-none px-0 focus:border-primary text-center"
-                          />
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <span className="font-medium">{ingredient.name}</span>
-                        <span className="text-muted-foreground">
-                          {ingredient.amount} {ingredient.unit}
-                        </span>
-                      </>
-                    )}
-                  </li>
-                ))}
-                </ul>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Instructions */}
-          <div className="mb-8">
-            <h2 className="text-xl font-semibold mb-4">Instructions</h2>
-            <div className="space-y-4">
-              {recipe.instructions.map((instruction, index) => (
-                <Card key={index}>
-                  <CardContent className="p-6">
-                    <div className="flex gap-4">
-                    <div className="flex-shrink-0 w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-medium">
-                      {index + 1}
-                    </div>
-                    {isEditing ? (
-                      <Textarea
-                        value={instruction}
-                        onChange={(e) => {
-                          const newInstructions = [...recipe.instructions]
-                          newInstructions[index] = e.target.value
-                          setRecipe(prev => prev ? {...prev, instructions: newInstructions} : prev)
-                        }}
-                        className="flex-1 leading-relaxed border-0 border-b rounded-none px-0 focus:border-primary resize-none"
-                        rows={2}
-                      />
-                    ) : (
-                      <p className="flex-1 leading-relaxed">{instruction}</p>
-                    )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div>
-          {/* Nutrition */}
-          {hasNutrition && (
-            <div className="card mb-6">
-              <h3 className="text-lg font-medium mb-4">Nutrition (per serving)</h3>
-              <div className="space-y-3">
-                {recipe.nutrition?.calories && (
-                  <div className="flex items-center justify-between">
-                    <span>Calories</span>
-                    <span className="font-medium">{recipe.nutrition.calories}</span>
-                  </div>
-                )}
-                {recipe.nutrition?.protein && (
-                  <div className="flex items-center justify-between">
-                    <span>Protein</span>
-                    <span className="font-medium">{recipe.nutrition.protein}g</span>
-                  </div>
-                )}
-                {recipe.nutrition?.carbs && (
-                  <div className="flex items-center justify-between">
-                    <span>Carbs</span>
-                    <span className="font-medium">{recipe.nutrition.carbs}g</span>
-                  </div>
-                )}
-                {recipe.nutrition?.fat && (
-                  <div className="flex items-center justify-between">
-                    <span>Fat</span>
-                    <span className="font-medium">{recipe.nutrition.fat}g</span>
-                  </div>
-                )}
-                {recipe.nutrition?.fiber && (
-                  <div className="flex items-center justify-between">
-                    <span>Fiber</span>
-                    <span className="font-medium">{recipe.nutrition.fiber}g</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
           {/* Recipe Info */}
           <Card>
             <CardHeader>

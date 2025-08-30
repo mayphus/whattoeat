@@ -134,18 +134,6 @@ export default function AnalyticsPage() {
               .sort(([,a], [,b]) => b - a)[0]?.[1].toString() + ' meals' || ''
           }
         />
-        <StatCard
-          title="Avg Daily Calories"
-          value={
-            analytics.nutritionTrends.length > 0
-              ? Math.round(
-                  analytics.nutritionTrends.reduce((sum, day) => sum + day.calories, 0) /
-                  analytics.nutritionTrends.length
-                ).toString()
-              : '0'
-          }
-          subtitle="daily"
-        />
       </div>
 
       <div className="grid grid-cols-1 gap-6">
@@ -166,7 +154,7 @@ export default function AnalyticsPage() {
                       </div>
                       <div>
                         <p className="font-medium">{item.recipe.name}</p>
-                        <p className="text-sm text-muted-foreground">{item.recipe.category}</p>
+                        <p className="text-sm text-muted-foreground">{item.recipe.description}</p>
                       </div>
                     </div>
                     <div className="text-right">
@@ -239,45 +227,6 @@ export default function AnalyticsPage() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Nutrition Overview</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {analytics.nutritionTrends.length === 0 ? (
-              <p className="text-muted-foreground text-center py-8">No nutrition data</p>
-            ) : (
-              <div className="space-y-4">
-                {[
-                  { label: 'Calories', key: 'calories' as const, unit: '' },
-                  { label: 'Protein', key: 'protein' as const, unit: 'g' },
-                  { label: 'Carbs', key: 'carbs' as const, unit: 'g' },
-                  { label: 'Fat', key: 'fat' as const, unit: 'g' },
-                ].map(({ label, key, unit }) => {
-                  const avg = analytics.nutritionTrends.reduce((sum, day) => sum + day[key], 0) / analytics.nutritionTrends.length
-                  const max = Math.max(...analytics.nutritionTrends.map(day => day[key]))
-                  
-                  return (
-                    <div key={key}>
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-sm font-medium">{label}</span>
-                        <span className="text-sm text-muted-foreground">
-                          {Math.round(avg)}{unit} avg
-                        </span>
-                      </div>
-                      <div className="w-full bg-muted rounded-full h-2">
-                        <div
-                          className="bg-primary h-2 rounded-full"
-                          style={{ width: max > 0 ? `${(avg / max) * 100}%` : '0%' }}
-                        />
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            )}
-          </CardContent>
-        </Card>
       </div>
     </div>
   )

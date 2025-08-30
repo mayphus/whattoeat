@@ -39,7 +39,7 @@ export default function WelcomePage() {
             <Feature
               icon={<ChartNoAxesGantt className="h-5 w-5" />}
               title="Analytics Insights"
-              text="View frequently made dishes and nutrition trends."
+              text="View frequently made dishes and cooking trends."
             />
           </div>
         </div>

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { format, startOfDay, endOfDay } from 'date-fns'
-import { AlertCircle, Clock } from 'lucide-react'
+import { AlertCircle } from 'lucide-react'
 import type { Meal } from '../types'
 import { mealApi } from '../services/api'
 import { useAuth } from '@clerk/clerk-react'
@@ -188,17 +188,8 @@ function MealCard({ meal }: MealCardProps) {
               <p className="text-muted-foreground text-sm mt-2">{meal.notes}</p>
             )}
 
-            {meal.recipe && (
-              <div className="mt-3 flex items-center gap-4 text-sm text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <Clock className="h-3 w-3" />
-                  {meal.recipe.prepTime + meal.recipe.cookTime} min
-                </div>
-                <span className="capitalize">{meal.recipe.difficulty}</span>
-                {meal.recipe.nutrition?.calories && (
-                  <span>{Math.round(meal.recipe.nutrition.calories * meal.portion)} cal</span>
-                )}
-              </div>
+            {meal.recipe && meal.recipe.description && (
+              <p className="text-sm text-muted-foreground mt-2">{meal.recipe.description}</p>
             )}
           </div>
 

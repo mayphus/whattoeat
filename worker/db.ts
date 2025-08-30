@@ -1,4 +1,4 @@
-import type { Recipe, Ingredient, Meal, MealAnalytics } from '../src/types'
+import type { Recipe, Meal, MealAnalytics } from '../src/types'
 
 export class Database {
   private db: D1Database
@@ -13,8 +13,8 @@ export class Database {
     const now = new Date().toISOString()
     
     const stmt = this.db.prepare(`
-      INSERT INTO recipes (id, user_id, name, description, image_url, prep_time, cook_time, servings, difficulty, category, instructions, calories, protein, carbs, fat, fiber, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO recipes (id, user_id, name, description, image_url, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     `)
     
     await stmt.bind(
@@ -23,30 +23,9 @@ export class Database {
       recipe.name,
       recipe.description || null,
       recipe.imageUrl || null,
-      recipe.prepTime,
-      recipe.cookTime,
-      recipe.servings,
-      recipe.difficulty,
-      recipe.category,
-      JSON.stringify(recipe.instructions),
-      recipe.nutrition?.calories || null,
-      recipe.nutrition?.protein || null,
-      recipe.nutrition?.carbs || null,
-      recipe.nutrition?.fat || null,
-      recipe.nutrition?.fiber || null,
       now,
       now
     ).run()
-
-    // Insert ingredients
-    for (const ingredient of recipe.ingredients) {
-      const ingredientId = crypto.randomUUID()
-      const ingredientStmt = this.db.prepare(`
-        INSERT INTO ingredients (id, recipe_id, name, amount, unit)
-        VALUES (?, ?, ?, ?, ?)
-      `)
-      await ingredientStmt.bind(ingredientId, id, ingredient.name, ingredient.amount, ingredient.unit).run()
-    }
 
     return this.getRecipeById(id, userId) as Promise<Recipe>
   }
@@ -76,13 +55,10 @@ export class Database {
   async updateRecipe(id: string, updates: Partial<Recipe>, userId: string): Promise<Recipe | null> {
     const now = new Date().toISOString()
     
-    // Update recipe
     const stmt = this.db.prepare(`
       UPDATE recipes 
-      SET name = ?, description = ?, image_url = ?, prep_time = ?, cook_time = ?, servings = ?, 
-          difficulty = ?, category = ?, instructions = ?, calories = ?, protein = ?, carbs = ?, 
-          fat = ?, fiber = ?, updated_at = ?
-      WHERE id = ?
+      SET name = ?, description = ?, image_url = ?, updated_at = ?
+      WHERE id = ? AND user_id = ?
     `)
     
     const existingRecipe = await this.getRecipeById(id, userId)
@@ -92,72 +68,20 @@ export class Database {
       updates.name ?? existingRecipe.name,
       updates.description ?? existingRecipe.description ?? null,
       updates.imageUrl ?? existingRecipe.imageUrl ?? null,
-      updates.prepTime ?? existingRecipe.prepTime,
-      updates.cookTime ?? existingRecipe.cookTime,
-      updates.servings ?? existingRecipe.servings,
-      updates.difficulty ?? existingRecipe.difficulty,
-      updates.category ?? existingRecipe.category,
-      JSON.stringify(updates.instructions ?? existingRecipe.instructions),
-      updates.nutrition?.calories ?? existingRecipe.nutrition?.calories ?? null,
-      updates.nutrition?.protein ?? existingRecipe.nutrition?.protein ?? null,
-      updates.nutrition?.carbs ?? existingRecipe.nutrition?.carbs ?? null,
-      updates.nutrition?.fat ?? existingRecipe.nutrition?.fat ?? null,
-      updates.nutrition?.fiber ?? existingRecipe.nutrition?.fiber ?? null,
       now,
-      id
+      id,
+      userId
     ).run()
-
-    // Update ingredients if provided
-    if (updates.ingredients) {
-      // Delete existing ingredients
-      const deleteStmt = this.db.prepare('DELETE FROM ingredients WHERE recipe_id = ?')
-      await deleteStmt.bind(id).run()
-
-      // Insert new ingredients
-      for (const ingredient of updates.ingredients) {
-        const ingredientId = ingredient.id || crypto.randomUUID()
-        const ingredientStmt = this.db.prepare(`
-          INSERT INTO ingredients (id, recipe_id, name, amount, unit)
-          VALUES (?, ?, ?, ?, ?)
-        `)
-        await ingredientStmt.bind(ingredientId, id, ingredient.name, ingredient.amount, ingredient.unit).run()
-      }
-    }
 
     return this.getRecipeById(id, userId)
   }
 
   private async mapRowToRecipe(row: Record<string, unknown>): Promise<Recipe> {
-    // Get ingredients
-    const ingredientsStmt = this.db.prepare('SELECT * FROM ingredients WHERE recipe_id = ?')
-    const ingredientsResult = await ingredientsStmt.bind(row.id).all()
-    
-    const ingredients: Ingredient[] = ingredientsResult.results.map((ing: Record<string, unknown>) => ({
-      id: ing.id as string,
-      name: ing.name as string,
-      amount: ing.amount as number,
-      unit: ing.unit as string
-    }))
-
     return {
       id: row.id as string,
       name: row.name as string,
       description: row.description as string | undefined,
       imageUrl: row.image_url as string | undefined,
-      prepTime: row.prep_time as number,
-      cookTime: row.cook_time as number,
-      servings: row.servings as number,
-      difficulty: row.difficulty as "easy" | "medium" | "hard",
-      category: row.category as string,
-      ingredients,
-      instructions: JSON.parse((row.instructions as string) || '[]'),
-      nutrition: {
-        calories: row.calories as number | undefined,
-        protein: row.protein as number | undefined,
-        carbs: row.carbs as number | undefined,
-        fat: row.fat as number | undefined,
-        fiber: row.fiber as number | undefined
-      },
       createdAt: row.created_at as string,
       updatedAt: row.updated_at as string
     }
@@ -278,38 +202,13 @@ export class Database {
       mealsByType[meal.mealType] = (mealsByType[meal.mealType] || 0) + 1
     }
 
-    // Nutrition trends (simplified for now)
-    const nutritionTrends = meals
-      .filter(meal => meal.recipe?.nutrition)
-      .map(meal => ({
-        date: meal.date,
-        calories: (meal.recipe?.nutrition?.calories || 0) * meal.portion,
-        protein: (meal.recipe?.nutrition?.protein || 0) * meal.portion,
-        carbs: (meal.recipe?.nutrition?.carbs || 0) * meal.portion,
-        fat: (meal.recipe?.nutrition?.fat || 0) * meal.portion
-      }))
-
-    // Top ingredients
-    const ingredientCounts = new Map<string, number>()
-    for (const meal of meals) {
-      if (meal.recipe) {
-        for (const ingredient of meal.recipe.ingredients) {
-          const count = ingredientCounts.get(ingredient.name) || 0
-          ingredientCounts.set(ingredient.name, count + meal.portion)
-        }
-      }
-    }
-    
-    const topIngredients = Array.from(ingredientCounts.entries())
-      .map(([ingredient, frequency]) => ({ ingredient, frequency }))
-      .sort((a, b) => b.frequency - a.frequency)
-      .slice(0, 10)
+    // For now, top ingredients will be empty since we removed ingredients
+    const topIngredients: Array<{ ingredient: string; frequency: number }> = []
 
     return {
       totalMeals,
       favoriteRecipes,
       mealsByType,
-      nutritionTrends,
       topIngredients
     }
   }

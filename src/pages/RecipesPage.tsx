@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Clock, Users, ChefHat } from 'lucide-react'
+import { ChefHat } from 'lucide-react'
 import { useAuth } from '@clerk/clerk-react'
 import type { Recipe } from '../types'
 import { recipeApi } from '../services/api'
@@ -89,8 +89,6 @@ interface RecipeCardProps {
 }
 
 function RecipeCard({ recipe }: RecipeCardProps) {
-  const totalTime = recipe.prepTime + recipe.cookTime
-
   return (
     <Link to={`/recipes/${recipe.id}`} className="block">
       <Card className="hover:shadow-sm transition-shadow">
@@ -111,18 +109,11 @@ function RecipeCard({ recipe }: RecipeCardProps) {
             {recipe.name}
           </h3>
           
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            {totalTime > 0 && (
-              <div className="flex items-center gap-1">
-                <Clock className="h-3 w-3" />
-                {totalTime} min
-              </div>
-            )}
-            <div className="flex items-center gap-1">
-              <Users className="h-3 w-3" />
-              {recipe.servings} servings
-            </div>
-          </div>
+          {recipe.description && (
+            <p className="text-sm text-muted-foreground line-clamp-2">
+              {recipe.description}
+            </p>
+          )}
         </CardContent>
       </Card>
     </Link>
