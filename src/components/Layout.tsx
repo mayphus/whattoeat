@@ -40,12 +40,7 @@ export default function Layout() {
             </NavLink>
             
             {/* User menu */}
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">
-                Welcome, {user?.firstName || user?.username}
-              </span>
-              <UserButton afterSignOutUrl="/" />
-            </div>
+            <UserButton afterSignOutUrl="/" />
           </div>
         </div>
       </nav>
