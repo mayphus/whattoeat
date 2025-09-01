@@ -11,11 +11,12 @@ export default function RecipesPage() {
   const [recipes, setRecipes] = useState<Recipe[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const { getToken } = useAuth()
+  const { isLoaded, isSignedIn, getToken } = useAuth()
 
   useEffect(() => {
+    if (!isLoaded || !isSignedIn) return
     loadRecipes()
-  }, [])
+  }, [isLoaded, isSignedIn])
 
   const loadRecipes = async () => {
     try {

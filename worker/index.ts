@@ -1,9 +1,10 @@
 import { Database } from './db'
-import { createClerkClient } from '@clerk/backend'
+import { verifyToken } from '@clerk/backend'
 
-type WorkerEnv = Env & { 
+interface WorkerEnv {
+  DB: D1Database
+  IMAGES: R2Bucket
   CLERK_SECRET_KEY: string
-  VITE_CLERK_PUBLISHABLE_KEY: string 
 }
 
 export default {
@@ -11,60 +12,79 @@ export default {
     const url = new URL(request.url)
     const db = new Database(env.DB)
 
-    // Enable CORS
+    // Enable CORS (allow credentials + echo Origin)
+    const origin = request.headers.get('Origin') || ''
+    const allowOrigin = origin || '*'
     const corsHeaders = {
-      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Origin': allowOrigin,
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Allow-Credentials': 'true',
+      'Vary': 'Origin',
     }
 
     if (request.method === 'OPTIONS') {
       return new Response(null, { headers: corsHeaders })
     }
 
+    // Simple auth check
+    const getUser = async (): Promise<{ userId: string } | null> => {
+      // Prefer Authorization header token
+      let token: string | null = null
+      const authHeader = request.headers.get('Authorization')
+      if (authHeader?.startsWith('Bearer ')) {
+        token = authHeader.substring(7)
+      }
 
-    // Helper: Verify token with Clerk Backend SDK
-    const verifyClerkToken = async (): Promise<{ userId: string } | null> => {
-      const clerkClient = createClerkClient({ 
-        secretKey: env.CLERK_SECRET_KEY,
-        publishableKey: env.VITE_CLERK_PUBLISHABLE_KEY 
-      })
+      // Fallback to Clerk session cookie (e.g., __session)
+      if (!token) {
+        const cookieHeader = request.headers.get('Cookie') || ''
+        const cookies = Object.fromEntries(
+          cookieHeader
+            .split(';')
+            .map((c) => c.trim())
+            .filter(Boolean)
+            .map((c) => {
+              const idx = c.indexOf('=')
+              if (idx === -1) return [c, ''] as const
+              const k = decodeURIComponent(c.slice(0, idx))
+              const v = decodeURIComponent(c.slice(idx + 1))
+              return [k, v] as const
+            })
+        ) as Record<string, string>
+        token = cookies['__session'] || null
+      }
+
+      if (!token) return null
       
       try {
-        const result = await clerkClient.authenticateRequest(request)
-        
-        if (result.isAuthenticated) {
-          const authData = result.toAuth()
-          return authData.userId ? { userId: authData.userId } : null
-        }
-        
-        return null
+        const payload = await verifyToken(token, { secretKey: env.CLERK_SECRET_KEY })
+        return payload?.sub ? { userId: payload.sub } : null
       } catch (error) {
-        console.warn('Clerk authentication failed:', error)
+        console.error('Auth failed:', error)
         return null
       }
     }
 
-    // Guard: Require auth, return user or Response
-    const requireUser = async (): Promise<{ userId: string } | Response> => {
-      const verified = await verifyClerkToken()
-      if (!verified) {
+    const requireAuth = async () => {
+      const user = await getUser()
+      if (!user) {
         return Response.json({ success: false, error: 'Unauthorized' }, { status: 401, headers: corsHeaders })
       }
-      return verified
+      return user
     }
 
     try {
       // Recipe endpoints
       if (url.pathname === '/api/recipes' && request.method === 'GET') {
-        const user = await requireUser()
+        const user = await requireAuth()
         if (user instanceof Response) return user
         const recipes = await db.getRecipes(user.userId)
         return Response.json({ success: true, data: recipes }, { headers: corsHeaders })
       }
 
       if (url.pathname === '/api/recipes' && request.method === 'POST') {
-        const user = await requireUser()
+        const user = await requireAuth()
         if (user instanceof Response) return user
         const recipe = await request.json()
         const createdRecipe = await db.createRecipe(recipe as any, user.userId)
@@ -72,7 +92,7 @@ export default {
       }
 
       if (url.pathname.startsWith('/api/recipes/') && request.method === 'GET') {
-        const user = await requireUser()
+        const user = await requireAuth()
         if (user instanceof Response) return user
         const id = url.pathname.split('/')[3]
         const recipe = await db.getRecipeById(id, user.userId)
@@ -83,7 +103,7 @@ export default {
       }
 
       if (url.pathname.startsWith('/api/recipes/') && request.method === 'PUT') {
-        const user = await requireUser()
+        const user = await requireAuth()
         if (user instanceof Response) return user
         const id = url.pathname.split('/')[3]
         const updates = await request.json()
@@ -96,7 +116,7 @@ export default {
 
       // Meal endpoints
       if (url.pathname === '/api/meals' && request.method === 'GET') {
-        const user = await requireUser()
+        const user = await requireAuth()
         if (user instanceof Response) return user
         const startDate = url.searchParams.get('startDate') || undefined
         const endDate = url.searchParams.get('endDate') || undefined
@@ -105,7 +125,7 @@ export default {
       }
 
       if (url.pathname === '/api/meals' && request.method === 'POST') {
-        const user = await requireUser()
+        const user = await requireAuth()
         if (user instanceof Response) return user
         const meal = await request.json()
         const createdMeal = await db.createMeal(meal as any, user.userId)
@@ -113,7 +133,7 @@ export default {
       }
 
       if (url.pathname.startsWith('/api/meals/') && request.method === 'GET') {
-        const user = await requireUser()
+        const user = await requireAuth()
         if (user instanceof Response) return user
         const id = url.pathname.split('/')[3]
         const meal = await db.getMealById(id, user.userId)
@@ -125,7 +145,7 @@ export default {
 
       // Analytics endpoint
       if (url.pathname === '/api/analytics' && request.method === 'GET') {
-        const user = await requireUser()
+        const user = await requireAuth()
         if (user instanceof Response) return user
         const startDate = url.searchParams.get('startDate') || undefined
         const endDate = url.searchParams.get('endDate') || undefined
@@ -135,7 +155,7 @@ export default {
 
       // Image upload endpoint
       if (url.pathname === '/api/upload' && request.method === 'POST') {
-        const user = await requireUser()
+        const user = await requireAuth()
         if (user instanceof Response) return user
         const formData = await request.formData()
         const file = formData.get('image') as File

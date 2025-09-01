@@ -15,7 +15,7 @@ import { useAuth } from '@clerk/clerk-react'
 
 export default function NewMealPage() {
   const navigate = useNavigate()
-  const { getToken } = useAuth()
+  const { isLoaded, isSignedIn, getToken } = useAuth()
   const [recipes, setRecipes] = useState<Recipe[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -32,8 +32,9 @@ export default function NewMealPage() {
   const [useCustomFood, setUseCustomFood] = useState(false)
 
   useEffect(() => {
+    if (!isLoaded || !isSignedIn) return
     loadRecipes()
-  }, [])
+  }, [isLoaded, isSignedIn])
 
   const loadRecipes = async () => {
     try {

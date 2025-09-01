@@ -32,7 +32,12 @@ async function request<T>(
   })
 
   if (!response.ok) {
-    throw new ApiError(response.status, `HTTP ${response.status}`)
+    let message = `HTTP ${response.status}`
+    try {
+      const body = await response.clone().json()
+      if (body?.error) message = body.error
+    } catch {}
+    throw new ApiError(response.status, message)
   }
 
   const data: ApiResponse<T> = await response.json()

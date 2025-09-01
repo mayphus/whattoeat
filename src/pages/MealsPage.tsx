@@ -15,9 +15,10 @@ export default function MealsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'))
-  const { getToken } = useAuth()
+  const { isLoaded, isSignedIn, getToken } = useAuth()
 
   const loadMeals = useCallback(async () => {
+    if (!isLoaded || !isSignedIn) return
     try {
       setLoading(true)
       const startDate = format(startOfDay(new Date(selectedDate)), 'yyyy-MM-dd')
@@ -31,7 +32,7 @@ export default function MealsPage() {
     } finally {
       setLoading(false)
     }
-  }, [selectedDate, getToken])
+  }, [selectedDate, isLoaded, isSignedIn, getToken])
 
   useEffect(() => {
     loadMeals()

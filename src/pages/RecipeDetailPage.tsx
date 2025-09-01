@@ -14,13 +14,14 @@ export default function RecipeDetailPage() {
   const [error, setError] = useState<string | null>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
-  const { getToken } = useAuth()
+  const { isLoaded, isSignedIn, getToken } = useAuth()
 
   useEffect(() => {
+    if (!isLoaded || !isSignedIn) return
     if (id) {
       loadRecipe(id)
     }
-  }, [id])
+  }, [id, isLoaded, isSignedIn])
 
   const loadRecipe = async (recipeId: string) => {
     try {

@@ -13,9 +13,10 @@ export default function AnalyticsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [timeRange, setTimeRange] = useState<'week' | 'month' | 'all'>('month')
-  const { getToken } = useAuth()
+  const { isLoaded, isSignedIn, getToken } = useAuth()
 
   const loadAnalytics = useCallback(async () => {
+    if (!isLoaded || !isSignedIn) return
     try {
       setLoading(true)
       
@@ -43,7 +44,7 @@ export default function AnalyticsPage() {
     } finally {
       setLoading(false)
     }
-  }, [timeRange, getToken])
+  }, [timeRange, isLoaded, isSignedIn, getToken])
 
   useEffect(() => {
     loadAnalytics()
