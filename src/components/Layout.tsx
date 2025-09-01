@@ -1,8 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom'
-import { UserButton, useUser } from '@clerk/clerk-react'
+import { UserButton } from '@clerk/clerk-react'
 
 export default function Layout() {
-  const { user } = useUser()
 
   return (
     <div className="min-h-screen bg-background">

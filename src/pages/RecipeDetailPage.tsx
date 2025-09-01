@@ -4,7 +4,6 @@ import { ArrowLeft } from 'lucide-react'
 import type { Recipe } from '../types'
 import { recipeApi } from '../services/api'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { useAuth } from '@clerk/clerk-react'
 
