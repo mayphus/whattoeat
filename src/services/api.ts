@@ -1,4 +1,4 @@
-import type { Recipe, Meal, MealAnalytics, ApiResponse } from '../types'
+import type { Recipe, CreateRecipeRequest, Meal, CreateMealRequest, MealAnalytics, ApiResponse } from '../types'
 
 const API_BASE = '/api'
 
@@ -58,7 +58,7 @@ export const recipeApi = {
     return request<Recipe>(`/recipes/${id}`, {}, token)
   },
 
-  async create(recipe: Omit<Recipe, 'id' | 'createdAt' | 'updatedAt'>, token?: string | null): Promise<Recipe> {
+  async create(recipe: CreateRecipeRequest, token?: string | null): Promise<Recipe> {
     return request<Recipe>('/recipes', {
       method: 'POST',
       body: JSON.stringify(recipe),
@@ -87,9 +87,16 @@ export const mealApi = {
     return request<Meal>(`/meals/${id}`, {}, token)
   },
 
-  async create(meal: Omit<Meal, 'id' | 'createdAt'>, token?: string | null): Promise<Meal> {
+  async create(meal: CreateMealRequest, token?: string | null): Promise<Meal> {
     return request<Meal>('/meals', {
       method: 'POST',
+      body: JSON.stringify(meal),
+    }, token)
+  },
+
+  async update(id: string, meal: Partial<Meal>, token?: string | null): Promise<Meal> {
+    return request<Meal>(`/meals/${id}`, {
+      method: 'PUT',
       body: JSON.stringify(meal),
     }, token)
   },

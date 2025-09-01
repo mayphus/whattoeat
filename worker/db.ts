@@ -1,4 +1,4 @@
-import type { Recipe, Meal, MealAnalytics } from '../src/types'
+import type { Recipe, CreateRecipeRequest, Meal, CreateMealRequest, MealAnalytics } from '../src/types'
 
 export class Database {
   private db: D1Database
@@ -8,7 +8,7 @@ export class Database {
   }
 
   // Recipe methods
-  async createRecipe(recipe: Omit<Recipe, 'id' | 'createdAt' | 'updatedAt'>, userId: string): Promise<Recipe> {
+  async createRecipe(recipe: CreateRecipeRequest, userId: string): Promise<Recipe> {
     const id = crypto.randomUUID()
     const now = new Date().toISOString()
     
@@ -55,24 +55,42 @@ export class Database {
   async updateRecipe(id: string, updates: Partial<Recipe>, userId: string): Promise<Recipe | null> {
     const now = new Date().toISOString()
     
+    const existingRecipe = await this.getRecipeById(id, userId)
+    if (!existingRecipe) return null
+
+    // Build dynamic SET clause based on provided updates
+    const setClauses: string[] = []
+    const params: (string | null)[] = []
+    
+    if ('name' in updates) {
+      setClauses.push('name = ?')
+      params.push(updates.name!)
+    }
+    
+    if ('description' in updates) {
+      setClauses.push('description = ?')
+      params.push(updates.description || null)
+    }
+    
+    if ('imageUrl' in updates) {
+      setClauses.push('image_url = ?')
+      params.push(updates.imageUrl || null)
+    }
+    
+    // Always update updated_at
+    setClauses.push('updated_at = ?')
+    params.push(now)
+    
+    // Add WHERE clause params
+    params.push(id, userId)
+    
     const stmt = this.db.prepare(`
       UPDATE recipes 
-      SET name = ?, description = ?, image_url = ?, updated_at = ?
+      SET ${setClauses.join(', ')}
       WHERE id = ? AND user_id = ?
     `)
     
-    const existingRecipe = await this.getRecipeById(id, userId)
-    if (!existingRecipe) return null
-    
-    await stmt.bind(
-      updates.name ?? existingRecipe.name,
-      updates.description ?? existingRecipe.description ?? null,
-      updates.imageUrl ?? existingRecipe.imageUrl ?? null,
-      now,
-      id,
-      userId
-    ).run()
-
+    await stmt.bind(...params).run()
     return this.getRecipeById(id, userId)
   }
 
@@ -88,7 +106,7 @@ export class Database {
   }
 
   // Meal methods
-  async createMeal(meal: Omit<Meal, 'id' | 'createdAt'>, userId: string): Promise<Meal> {
+  async createMeal(meal: CreateMealRequest, userId: string): Promise<Meal> {
     const id = crypto.randomUUID()
     const now = new Date().toISOString()
     
@@ -150,6 +168,57 @@ export class Database {
     if (!result) return null
     
     return this.mapRowToMeal(result, userId)
+  }
+
+  async updateMeal(id: string, updates: Partial<Meal>, userId: string): Promise<Meal | null> {
+    const existingMeal = await this.getMealById(id, userId)
+    if (!existingMeal) return null
+
+    // Build dynamic SET clause based on provided updates
+    const setClauses: string[] = []
+    const params: (string | number | null)[] = []
+    
+    if ('date' in updates) {
+      setClauses.push('date = ?')
+      params.push(updates.date!)
+    }
+    
+    if ('mealType' in updates) {
+      setClauses.push('meal_type = ?')
+      params.push(updates.mealType!)
+    }
+    
+    if ('recipeId' in updates) {
+      setClauses.push('recipe_id = ?')
+      params.push(updates.recipeId || null)
+    }
+    
+    if ('customFoodName' in updates) {
+      setClauses.push('custom_food_name = ?')
+      params.push(updates.customFoodName || null)
+    }
+    
+    if ('portion' in updates) {
+      setClauses.push('portion = ?')
+      params.push(updates.portion!)
+    }
+    
+    if ('notes' in updates) {
+      setClauses.push('notes = ?')
+      params.push(updates.notes || null)
+    }
+    
+    // Add WHERE clause params
+    params.push(id, userId)
+    
+    const stmt = this.db.prepare(`
+      UPDATE meals 
+      SET ${setClauses.join(', ')}
+      WHERE id = ? AND user_id = ?
+    `)
+    
+    await stmt.bind(...params).run()
+    return this.getMealById(id, userId)
   }
 
   private async mapRowToMeal(row: Record<string, unknown>, userId: string): Promise<Meal> {

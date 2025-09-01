@@ -143,6 +143,18 @@ export default {
         return Response.json({ success: true, data: meal }, { headers: corsHeaders })
       }
 
+      if (url.pathname.startsWith('/api/meals/') && request.method === 'PUT') {
+        const user = await requireAuth()
+        if (user instanceof Response) return user
+        const id = url.pathname.split('/')[3]
+        const updates = await request.json()
+        const updatedMeal = await db.updateMeal(id, updates as any, user.userId)
+        if (!updatedMeal) {
+          return Response.json({ success: false, error: 'Meal not found' }, { status: 404, headers: corsHeaders })
+        }
+        return Response.json({ success: true, data: updatedMeal }, { headers: corsHeaders })
+      }
+
       // Analytics endpoint
       if (url.pathname === '/api/analytics' && request.method === 'GET') {
         const user = await requireAuth()
