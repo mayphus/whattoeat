@@ -118,3 +118,8 @@
   --ring: 21 100% 46%; /* primary orange for focus rings */
   --radius: 0.5rem; /* matches your design system */
 }
+
+/* Prevent layout shift from scrollbar appearance/disappearance */
+html {
+  overflow-y: scroll; /* Always show vertical scrollbar space */
+}
