@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Globe } from 'lucide-react'
 import type { Recipe } from '../types'
 import { recipeApi } from '../services/api'
 import { Button } from '@/components/ui/button'
@@ -37,7 +37,7 @@ export default function RecipeDetailPage() {
     }
   }
 
-  const handleSave = async (updates: { name: string; description?: string; imageUrl?: string }) => {
+  const handleSave = async (updates: { name: string; description?: string; imageUrl?: string; isPublic?: boolean }) => {
     if (!recipe || !id) return
     
     try {
@@ -143,7 +143,15 @@ export default function RecipeDetailPage() {
         
         <div className="flex items-start justify-between mb-4">
           <div>
-            <h1 className="text-3xl font-semibold mb-2">{recipe.name}</h1>
+            <div className="flex items-center gap-3 mb-2">
+              <h1 className="text-3xl font-semibold">{recipe.name}</h1>
+              {recipe.isPublic && (
+                <div className="flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
+                  <Globe className="h-4 w-4" />
+                  Public
+                </div>
+              )}
+            </div>
             {recipe.description ? (
               <p className="text-muted-foreground text-lg">{recipe.description}</p>
             ) : (

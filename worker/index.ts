@@ -114,6 +114,34 @@ export default {
         return Response.json({ success: true, data: updatedRecipe }, { headers: corsHeaders })
       }
 
+      // Public recipe endpoints (no auth required for viewing)
+      if (url.pathname === '/api/public/recipes' && request.method === 'GET') {
+        const recipes = await db.getPublicRecipes()
+        return Response.json({ success: true, data: recipes }, { headers: corsHeaders })
+      }
+
+      if (url.pathname.startsWith('/api/public/recipes/') && request.method === 'GET') {
+        const id = url.pathname.split('/')[4]
+        const recipe = await db.getPublicRecipeById(id)
+        if (!recipe) {
+          return Response.json({ success: false, error: 'Recipe not found' }, { status: 404, headers: corsHeaders })
+        }
+        return Response.json({ success: true, data: recipe }, { headers: corsHeaders })
+      }
+
+      if (url.pathname.startsWith('/api/public/recipes/') && url.pathname.endsWith('/import') && request.method === 'POST') {
+        const user = await requireAuth()
+        if (user instanceof Response) return user
+        const parts = url.pathname.split('/')
+        // /api/public/recipes/:id/import -> index: [ '', 'api', 'public', 'recipes', ':id', 'import' ]
+        const id = parts[4]
+        const imported = await db.importPublicRecipe(id, user.userId)
+        if (!imported) {
+          return Response.json({ success: false, error: 'Recipe not found or not public' }, { status: 404, headers: corsHeaders })
+        }
+        return Response.json({ success: true, data: imported }, { headers: corsHeaders })
+      }
+
       // Meal endpoints
       if (url.pathname === '/api/meals' && request.method === 'GET') {
         const user = await requireAuth()

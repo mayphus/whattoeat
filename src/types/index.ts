@@ -3,6 +3,7 @@ export interface Recipe {
   name: string
   description?: string
   imageUrl?: string
+  isPublic: boolean
   createdAt: string
   updatedAt: string
 }
@@ -11,6 +12,7 @@ export interface CreateRecipeRequest {
   name: string
   description?: string
   imageUrl?: string
+  isPublic?: boolean
 }
 
 

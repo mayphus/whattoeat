@@ -54,8 +54,16 @@ export const recipeApi = {
     return request<Recipe[]>('/recipes', {}, token)
   },
 
+  async getAllPublic(): Promise<Recipe[]> {
+    return request<Recipe[]>('/public/recipes')
+  },
+
   async getById(id: string, token?: string | null): Promise<Recipe> {
     return request<Recipe>(`/recipes/${id}`, {}, token)
+  },
+
+  async getPublicById(id: string): Promise<Recipe> {
+    return request<Recipe>(`/public/recipes/${id}`)
   },
 
   async create(recipe: CreateRecipeRequest, token?: string | null): Promise<Recipe> {
@@ -69,6 +77,12 @@ export const recipeApi = {
     return request<Recipe>(`/recipes/${id}`, {
       method: 'PUT',
       body: JSON.stringify(recipe),
+    }, token)
+  },
+
+  async importPublic(id: string, token?: string | null): Promise<Recipe> {
+    return request<Recipe>(`/public/recipes/${id}/import`, {
+      method: 'POST',
     }, token)
   },
 }

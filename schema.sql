@@ -5,6 +5,7 @@ CREATE TABLE recipes (
   name TEXT NOT NULL,
   description TEXT,
   image_url TEXT,
+  is_public INTEGER NOT NULL DEFAULT 0,
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL
 );
@@ -25,6 +26,7 @@ CREATE TABLE meals (
 
 -- Create indexes for better performance
 CREATE INDEX idx_recipes_user_id ON recipes(user_id);
+CREATE INDEX idx_recipes_is_public ON recipes(is_public);
 CREATE INDEX idx_meals_user_id ON meals(user_id);
 CREATE INDEX idx_meals_date ON meals(date);
 CREATE INDEX idx_meals_recipe_id ON meals(recipe_id);

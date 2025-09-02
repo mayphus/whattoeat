@@ -13,6 +13,7 @@ interface RecipeFormData {
   name: string
   description?: string
   imageUrl?: string
+  isPublic?: boolean
 }
 
 interface RecipeFormProps {
@@ -38,6 +39,7 @@ export default function RecipeForm({
     name: recipe?.name || '',
     description: recipe?.description || '',
     imageUrl: recipe?.imageUrl || '',
+    isPublic: recipe?.isPublic || false,
   })
 
   const handleInputChange = (field: string, value: string) => {
@@ -55,6 +57,7 @@ export default function RecipeForm({
     const updates: RecipeFormData = { name: formData.name.trim() }
     if (formData.description.trim()) updates.description = formData.description.trim()
     if (formData.imageUrl.trim()) updates.imageUrl = formData.imageUrl.trim()
+    updates.isPublic = !!formData.isPublic
 
     await onSubmit(updates)
   }
@@ -106,6 +109,17 @@ export default function RecipeForm({
                   onImageUploaded={(imageUrl) => handleInputChange('imageUrl', imageUrl)}
                   currentImageUrl={formData.imageUrl}
                 />
+              </div>
+
+              <div className="flex items-center space-x-2 pt-2">
+                <input
+                  id="isPublic"
+                  type="checkbox"
+                  checked={!!formData.isPublic}
+                  onChange={(e) => setFormData(prev => ({ ...prev, isPublic: e.target.checked }))}
+                  className="h-4 w-4"
+                />
+                <Label htmlFor="isPublic">Make this recipe public</Label>
               </div>
             </div>
           </CardContent>

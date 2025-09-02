@@ -13,8 +13,8 @@ export class Database {
     const now = new Date().toISOString()
     
     const stmt = this.db.prepare(`
-      INSERT INTO recipes (id, user_id, name, description, image_url, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO recipes (id, user_id, name, description, image_url, is_public, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `)
     
     await stmt.bind(
@@ -23,6 +23,7 @@ export class Database {
       recipe.name,
       recipe.description || null,
       recipe.imageUrl || null,
+      recipe.isPublic ? 1 : 0,
       now,
       now
     ).run()
@@ -77,6 +78,11 @@ export class Database {
       params.push(updates.imageUrl || null)
     }
     
+    if ('isPublic' in updates) {
+      setClauses.push('is_public = ?')
+      params.push(updates.isPublic ? 1 : 0)
+    }
+    
     // Always update updated_at
     setClauses.push('updated_at = ?')
     params.push(now)
@@ -100,9 +106,43 @@ export class Database {
       name: row.name as string,
       description: row.description as string | undefined,
       imageUrl: row.image_url as string | undefined,
+      isPublic: (row.is_public as number) === 1,
       createdAt: row.created_at as string,
       updatedAt: row.updated_at as string
     }
+  }
+
+  // Public recipe methods
+  async getPublicRecipes(): Promise<Recipe[]> {
+    const stmt = this.db.prepare('SELECT * FROM recipes WHERE is_public = 1 ORDER BY created_at DESC')
+    const result = await stmt.all()
+    const recipes: Recipe[] = []
+    for (const row of result.results) {
+      const recipe = await this.mapRowToRecipe(row)
+      recipes.push(recipe)
+    }
+    return recipes
+  }
+
+  async getPublicRecipeById(id: string): Promise<Recipe | null> {
+    const stmt = this.db.prepare('SELECT * FROM recipes WHERE id = ? AND is_public = 1')
+    const result = await stmt.bind(id).first()
+    if (!result) return null
+    return this.mapRowToRecipe(result)
+  }
+
+  async importPublicRecipe(id: string, userId: string): Promise<Recipe | null> {
+    const publicRecipe = await this.getPublicRecipeById(id)
+    if (!publicRecipe) return null
+    return this.createRecipe(
+      {
+        name: publicRecipe.name,
+        description: publicRecipe.description,
+        imageUrl: publicRecipe.imageUrl,
+        isPublic: false,
+      },
+      userId
+    )
   }
 
   // Meal methods

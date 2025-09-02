@@ -9,7 +9,7 @@ export default function NewRecipePage() {
   const [error, setError] = useState<string | null>(null)
   const { getToken } = useAuth()
 
-  const handleSubmit = async (data: { name: string; description?: string; imageUrl?: string }) => {
+  const handleSubmit = async (data: { name: string; description?: string; imageUrl?: string; isPublic?: boolean }) => {
     if (!data.name?.trim()) {
       setError('Please enter recipe name')
       return
