@@ -61,7 +61,7 @@ export class Database {
 
     // Build dynamic SET clause based on provided updates
     const setClauses: string[] = []
-    const params: (string | null)[] = []
+    const params: (string | number | null)[] = []
     
     if ('name' in updates) {
       setClauses.push('name = ?')

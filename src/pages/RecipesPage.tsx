@@ -91,7 +91,8 @@ export default function RecipesPage() {
     )
   }
 
-  const currentRecipes = activeTab === 'my' ? myRecipes : publicRecipes
+  // Note: computed list not used currently
+  // const currentRecipes = activeTab === 'my' ? myRecipes : publicRecipes
 
   return (
     <div>
@@ -134,7 +135,7 @@ export default function RecipesPage() {
           onImport={handleImport}
           importingId={importingId}
           isRecipeImported={isRecipeAlreadyImported}
-          isSignedIn={isSignedIn}
+          isSignedIn={!!isSignedIn}
         />
       )}
     </div>
@@ -252,7 +253,7 @@ function MyRecipeCard({ recipe }: MyRecipeCardProps) {
               {recipe.name}
             </h3>
             {recipe.isPublic && (
-              <Globe className="h-4 w-4 text-blue-500" title="Public recipe" />
+              <Globe className="h-4 w-4 text-blue-500" aria-label="Public recipe" />
             )}
           </div>
           
