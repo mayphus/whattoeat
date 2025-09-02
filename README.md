@@ -1,69 +1,162 @@
-# React + TypeScript + Vite
+# WhatToEat 🍽️
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern meal planning and recipe management application built with React, TypeScript, and Cloudflare Workers.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Recipe Management**: Create, edit, and organize your favorite recipes
+- **Meal Planning**: Track daily meals with portion sizes and notes  
+- **Public Recipe Sharing**: Share recipes publicly and import others' recipes
+- **Analytics**: View insights about your eating patterns and favorite recipes
+- **Image Upload**: Add photos to your recipes with cloud storage
+- **Responsive Design**: Works seamlessly on desktop and mobile devices
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Frontend
+- **React 19** with TypeScript
+- **Vite** for fast development and building  
+- **Tailwind CSS** for styling
+- **shadcn/ui** for beautiful UI components
+- **Clerk** for authentication
+- **React Router** for navigation
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Backend  
+- **Cloudflare Workers** for serverless API
+- **Cloudflare D1** (SQLite) for database
+- **Cloudflare R2** for image storage
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+## Getting Started
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Prerequisites
+- Node.js 18 or higher
+- Cloudflare account
+- Wrangler CLI (`npm install -g wrangler`)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd whattoeat
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables**
+   Create a `.dev.vars` file in the root directory:
+   ```bash
+   CLERK_SECRET_KEY=your_clerk_secret_key
+   ```
+
+4. **Set up Cloudflare resources**
+   ```bash
+   # Create D1 database
+   wrangler d1 create whattoeat-db
+   
+   # Create R2 bucket  
+   wrangler r2 bucket create whattoeat-images
+   
+   # Run database migrations
+   wrangler d1 execute whattoeat-db --file=./schema.sql
+   ```
+
+5. **Start development server**
+   ```bash
+   npm run dev
+   ```
+
+## Available Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run test` - Run tests
+- `npm run lint` - Run ESLint
+- `npm run deploy` - Deploy to Cloudflare
+
+## Project Structure
+
+```
+├── src/                    # React frontend source code
+│   ├── components/         # Reusable UI components
+│   ├── pages/             # Route components
+│   ├── services/          # API service functions
+│   ├── types/             # TypeScript type definitions
+│   └── lib/               # Utility functions
+├── worker/                # Cloudflare Worker source code
+│   ├── index.ts           # Worker entry point
+│   └── db.ts              # Database operations
+├── migrations/            # Database migration files
+├── schema.sql             # Database schema
+├── TECHNICAL_DOCS.md      # Comprehensive technical documentation
+└── public/                # Static assets
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## API Documentation
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+The application provides a RESTful API with the following main endpoints:
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- `GET/POST /api/recipes` - Manage user recipes
+- `GET /api/public/recipes` - Browse public recipes  
+- `GET/POST /api/meals` - Track daily meals
+- `GET /api/analytics` - View eating analytics
+- `POST /api/upload` - Upload recipe images
+
+For detailed API documentation, see [TECHNICAL_DOCS.md](./TECHNICAL_DOCS.md).
+
+## Database Schema
+
+The application uses a clean, normalized database schema with two main tables:
+
+- **recipes** - Store recipe information with user scoping
+- **meals** - Track daily meal entries linked to recipes
+
+Database migrations are managed through SQL files in the `/migrations` directory.
+
+## Authentication
+
+Authentication is handled by [Clerk](https://clerk.dev/), providing:
+- Secure user registration and login
+- Session management
+- JWT token verification
+- User data scoping
+
+## Deployment
+
+The application is designed for deployment on Cloudflare's edge network:
+
+1. **Build the application**
+   ```bash
+   npm run build
+   ```
+
+2. **Deploy to Cloudflare**
+   ```bash
+   npm run deploy
+   ```
+
+The deployment includes:
+- Static frontend assets on Cloudflare Pages
+- Serverless API on Cloudflare Workers  
+- Database on Cloudflare D1
+- Image storage on Cloudflare R2
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Support
+
+For technical details and architecture information, see [TECHNICAL_DOCS.md](./TECHNICAL_DOCS.md).

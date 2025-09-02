@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { format } from 'date-fns'
 import { AlertCircle } from 'lucide-react'
@@ -31,12 +31,7 @@ export default function NewMealPage() {
 
   const [useCustomFood, setUseCustomFood] = useState(false)
 
-  useEffect(() => {
-    if (!isLoaded || !isSignedIn) return
-    loadRecipes()
-  }, [isLoaded, isSignedIn])
-
-  const loadRecipes = async () => {
+  const loadRecipes = useCallback(async () => {
     try {
       const token = await getToken()
       const data = await recipeApi.getAll(token)
@@ -44,7 +39,12 @@ export default function NewMealPage() {
     } catch (err) {
       console.error('Failed to load recipes:', err)
     }
-  }
+  }, [getToken])
+
+  useEffect(() => {
+    if (!isLoaded || !isSignedIn) return
+    loadRecipes()
+  }, [isLoaded, isSignedIn, loadRecipes])
 
   const handleInputChange = (field: string, value: string | number) => {
     setFormData(prev => ({ ...prev, [field]: value }))

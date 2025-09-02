@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft, Globe } from 'lucide-react'
 import type { Recipe } from '../types'
@@ -16,14 +16,7 @@ export default function RecipeDetailPage() {
   const [isSaving, setIsSaving] = useState(false)
   const { isLoaded, isSignedIn, getToken } = useAuth()
 
-  useEffect(() => {
-    if (!isLoaded || !isSignedIn) return
-    if (id) {
-      loadRecipe(id)
-    }
-  }, [id, isLoaded, isSignedIn])
-
-  const loadRecipe = async (recipeId: string) => {
+  const loadRecipe = useCallback(async (recipeId: string) => {
     try {
       setLoading(true)
       const token = await getToken()
@@ -35,7 +28,14 @@ export default function RecipeDetailPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [getToken])
+
+  useEffect(() => {
+    if (!isLoaded || !isSignedIn) return
+    if (id) {
+      loadRecipe(id)
+    }
+  }, [id, isLoaded, isSignedIn, loadRecipe])
 
   const handleSave = async (updates: { name: string; description?: string; imageUrl?: string; isPublic?: boolean }) => {
     if (!recipe || !id) return

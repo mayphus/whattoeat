@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ChefHat, Globe } from 'lucide-react'
 import { useAuth } from '@clerk/clerk-react'
@@ -17,13 +17,7 @@ export default function RecipesPage() {
   const { isLoaded, isSignedIn, getToken } = useAuth()
   const navigate = useNavigate()
 
-  useEffect(() => {
-    if (!isLoaded) return
-    loadMyRecipes()
-    loadPublicRecipes()
-  }, [isLoaded, isSignedIn])
-
-  const loadMyRecipes = async () => {
+  const loadMyRecipes = useCallback(async () => {
     if (!isSignedIn) return
     try {
       setLoading(true)
@@ -36,16 +30,22 @@ export default function RecipesPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [isSignedIn, getToken])
 
-  const loadPublicRecipes = async () => {
+  const loadPublicRecipes = useCallback(async () => {
     try {
       const data = await recipeApi.getAllPublic()
       setPublicRecipes(data)
     } catch (err) {
       console.error('Failed to load public recipes:', err)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    if (!isLoaded) return
+    loadMyRecipes()
+    loadPublicRecipes()
+  }, [isLoaded, isSignedIn, loadMyRecipes, loadPublicRecipes])
 
   const isRecipeAlreadyImported = (publicRecipe: Recipe): boolean => {
     return myRecipes.some(userRecipe => userRecipe.name.toLowerCase() === publicRecipe.name.toLowerCase())

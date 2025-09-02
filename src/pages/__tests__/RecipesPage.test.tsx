@@ -34,15 +34,9 @@ describe('RecipesPage', () => {
         id: '1',
         name: 'Test Recipe',
         description: 'A test recipe',
-        prepTime: 10,
-        cookTime: 20,
-        servings: 2,
-        difficulty: 'medium' as const,
-        category: 'main',
-        ingredients: [],
-        instructions: [],
-        createdAt: '2024-01-01T00:00:00Z',
-        updatedAt: '2024-01-01T00:00:00Z'
+        imageUrl: '',
+        isPublic: false,
+        createdAt: '2024-01-01T00:00:00Z'
       }
     ]
 
@@ -53,9 +47,6 @@ describe('RecipesPage', () => {
     await waitFor(() => {
       expect(screen.getByText('Test Recipe')).toBeInTheDocument()
       expect(screen.getByText('A test recipe')).toBeInTheDocument()
-      expect(screen.getByText('30 min')).toBeInTheDocument() // prep + cook time
-      expect(screen.getByText('2 servings')).toBeInTheDocument()
-      expect(screen.getByText('medium')).toBeInTheDocument()
     })
   })
 

@@ -1,5 +1,6 @@
 import { Database } from './db'
 import { verifyToken } from '@clerk/backend'
+import type { CreateRecipeRequest, CreateMealRequest, Recipe, Meal } from '../src/types'
 
 interface WorkerEnv {
   DB: D1Database
@@ -87,7 +88,7 @@ export default {
         const user = await requireAuth()
         if (user instanceof Response) return user
         const recipe = await request.json()
-        const createdRecipe = await db.createRecipe(recipe as any, user.userId)
+        const createdRecipe = await db.createRecipe(recipe as CreateRecipeRequest, user.userId)
         return Response.json({ success: true, data: createdRecipe }, { headers: corsHeaders })
       }
 
@@ -107,7 +108,7 @@ export default {
         if (user instanceof Response) return user
         const id = url.pathname.split('/')[3]
         const updates = await request.json()
-        const updatedRecipe = await db.updateRecipe(id, updates as any, user.userId)
+        const updatedRecipe = await db.updateRecipe(id, updates as Partial<Recipe>, user.userId)
         if (!updatedRecipe) {
           return Response.json({ success: false, error: 'Recipe not found' }, { status: 404, headers: corsHeaders })
         }
@@ -156,7 +157,7 @@ export default {
         const user = await requireAuth()
         if (user instanceof Response) return user
         const meal = await request.json()
-        const createdMeal = await db.createMeal(meal as any, user.userId)
+        const createdMeal = await db.createMeal(meal as CreateMealRequest, user.userId)
         return Response.json({ success: true, data: createdMeal }, { headers: corsHeaders })
       }
 
@@ -176,7 +177,7 @@ export default {
         if (user instanceof Response) return user
         const id = url.pathname.split('/')[3]
         const updates = await request.json()
-        const updatedMeal = await db.updateMeal(id, updates as any, user.userId)
+        const updatedMeal = await db.updateMeal(id, updates as Partial<Meal>, user.userId)
         if (!updatedMeal) {
           return Response.json({ success: false, error: 'Meal not found' }, { status: 404, headers: corsHeaders })
         }

@@ -13,8 +13,8 @@ export class Database {
     const now = new Date().toISOString()
     
     const stmt = this.db.prepare(`
-      INSERT INTO recipes (id, user_id, name, description, image_url, is_public, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO recipes (id, user_id, name, description, image_url, is_public, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     `)
     
     await stmt.bind(
@@ -24,7 +24,6 @@ export class Database {
       recipe.description || null,
       recipe.imageUrl || null,
       recipe.isPublic ? 1 : 0,
-      now,
       now
     ).run()
 
@@ -54,8 +53,6 @@ export class Database {
   }
 
   async updateRecipe(id: string, updates: Partial<Recipe>, userId: string): Promise<Recipe | null> {
-    const now = new Date().toISOString()
-    
     const existingRecipe = await this.getRecipeById(id, userId)
     if (!existingRecipe) return null
 
@@ -83,10 +80,6 @@ export class Database {
       params.push(updates.isPublic ? 1 : 0)
     }
     
-    // Always update updated_at
-    setClauses.push('updated_at = ?')
-    params.push(now)
-    
     // Add WHERE clause params
     params.push(id, userId)
     
@@ -107,8 +100,7 @@ export class Database {
       description: row.description as string | undefined,
       imageUrl: row.image_url as string | undefined,
       isPublic: (row.is_public as number) === 1,
-      createdAt: row.created_at as string,
-      updatedAt: row.updated_at as string
+      createdAt: row.created_at as string
     }
   }
 

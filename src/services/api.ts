@@ -36,7 +36,9 @@ async function request<T>(
     try {
       const body = await response.clone().json()
       if (body?.error) message = body.error
-    } catch {}
+    } catch {
+      // Ignore parsing errors
+    }
     throw new ApiError(response.status, message)
   }
 

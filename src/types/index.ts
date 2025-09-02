@@ -5,7 +5,6 @@ export interface Recipe {
   imageUrl?: string
   isPublic: boolean
   createdAt: string
-  updatedAt: string
 }
 
 export interface CreateRecipeRequest {
